@@ -6,10 +6,10 @@ import React from 'react'
 
 const Home = () => {
     return (
-        <div>
+        <div className='dark'>
             <Navbar />
             Home
-            <Button variant="link">Button</Button>
+          
           
             <h1 className='text-2xl text-purple-400'>hello</h1>
             
