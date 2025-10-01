@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Post from "../models/Post.js";
 
 export const createPost = async (req, res) => {
@@ -46,7 +47,7 @@ export const createPost = async (req, res) => {
 export const getallPosts = async (req, res) => {
     try {
         const posts = await Post.find().populate('userId', 'username email');
-        if(!posts){
+        if(posts.length === 0){
             return res.status(404).json({
                 message: "No posts found",
                 success: false
@@ -65,4 +66,36 @@ export const getallPosts = async (req, res) => {
             success: false
         });
     }
+}
+
+export const deletePost = async (req, res) => {
+    const { postId } = req.params;  
+    // console.log("Deleting post with ID:", postId);
+
+    if( !mongoose.Types.ObjectId.isValid(postId)){
+        return res.status(400).json({
+            message: "Invalid post ID", 
+            success: false
+        });
+    }
+
+    try {
+        const deletedPost = await Post.findByIdAndDelete(postId);
+        if (!deletedPost) {
+            return res.status(404).json({
+                message: "Post not found",
+                success: false
+            });
+        }
+        return res.status(200).json({
+            message: "Post deleted successfully",
+            success: true
+        });
+    } catch (error) {
+        console.error("Error deleting post:", error);
+        return res.status(500).json({
+            message: "Failed to delete post",
+            success: false
+        });
+    }   
 }
