@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
 import Post from "../models/Post.js";
+import getDataUri from "../utils/datauri.js";
+import cloudinary from "../utils/cloudinary.js";
 
 export const createPost = async (req, res) => {
 
-    const { userId, title, content, imageUrl, hashtags, scheduleTime, aiCaption } = req.body;
+    const { userId, title, content, hashtags, scheduleTime, aiCaption } = req.body;
 
     if (!title) {
         return res.status(400).json({
@@ -12,13 +14,22 @@ export const createPost = async (req, res) => {
         });
     }
 
+    let imageUrl = "";
+
+    if(req.file){
+        const image = req.file
+        const fileuri = getDataUri(image)
+        const result = await cloudinary.uploader.upload(fileuri.content)
+        imageUrl = result.secure_url;
+    }
+
     try {
 
         const post = await Post.create({
             userId,
             title,
             content,
-            imageUrl,
+            imageUrl : imageUrl || "",
             hashtags,
             scheduleTime,
             aiCaption,
