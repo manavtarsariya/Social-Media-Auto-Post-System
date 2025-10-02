@@ -5,6 +5,7 @@ import { Button } from './components/ui/button'
 import Navbar from "./components/layout/Navbar";
 import Home from "./pages/Home";
 import Createpostpage from "./pages/Createpostpage";
+import AllPosts from "./pages/AllPosts";
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -17,6 +18,10 @@ function App() {
   {
     path: "/createpost",
     element: <Createpostpage/>,
+  },
+  {
+    path: "/posts",
+    element: <AllPosts/>,
   }
 ]);
 
@@ -24,8 +29,7 @@ function App() {
     <>
       <div>
         <RouterProvider router={router} />
-        {/* hi i am manav
-        <Button>Button</Button> */}
+      
         
       </div>
     </>
