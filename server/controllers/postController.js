@@ -14,6 +14,8 @@ export const createPost = async (req, res) => {
         });
     }
 
+    const hashstagsArray = hashtags.split(',').map(tag => tag.trim()) || [];
+
     let imageUrl = "";
 
     if(req.file){
@@ -31,7 +33,7 @@ export const createPost = async (req, res) => {
             title,
             content,
             imageUrl : imageUrl || "",
-            hashtags,
+            hashtags : hashstagsArray,
             scheduleTime,
             aiCaption,
         });
