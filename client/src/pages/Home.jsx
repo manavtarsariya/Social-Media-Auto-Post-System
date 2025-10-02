@@ -9,7 +9,7 @@ const Home = () => {
         <div className='dark'>
             <Navbar />
             Home
-          
+           
           
             <h1 className='text-2xl text-purple-400'>hello</h1>
             

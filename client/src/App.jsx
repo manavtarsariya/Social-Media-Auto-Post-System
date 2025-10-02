@@ -4,6 +4,7 @@ import './App.css'
 import { Button } from './components/ui/button'
 import Navbar from "./components/layout/Navbar";
 import Home from "./pages/Home";
+import Createpostpage from "./pages/Createpostpage";
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -13,6 +14,10 @@ function App() {
     path: "/",
     element: <Home/>,
   },
+  {
+    path: "/createpost",
+    element: <Createpostpage/>,
+  }
 ]);
 
   return (

@@ -13,7 +13,7 @@ export default function Navbar() {
           {/* Links */}
           <div className="hidden md:flex space-x-6">
             <Link to="/" className="text-gray-700 hover:text-blue-600">Home</Link>
-            <Link to="/create" className="text-gray-700 hover:text-blue-600">Create Post</Link>
+            <Link to="/createpost" className="text-gray-700 hover:text-blue-600">Create Post</Link>
             <Link to="/posts" className="text-gray-700 hover:text-blue-600">Posts</Link>
             <Link to="/calendar" className="text-gray-700 hover:text-blue-600">Calendar</Link>
             {/* <Link to="/settings" className="text-gray-700 hover:text-blue-600">Settings</Link> */}
