@@ -20,6 +20,7 @@ export const createPost = async (req, res) => {
         const image = req.file
         const fileuri = getDataUri(image)
         const result = await cloudinary.uploader.upload(fileuri.content)
+        console.log("cloudinary",result);
         imageUrl = result.secure_url;
     }
 

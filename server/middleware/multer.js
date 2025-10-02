@@ -1,5 +1,6 @@
 import multer from 'multer';
-import path from 'path';
 
+
+console.log("Multer middleware loaded");
 const storage = multer.memoryStorage();
 export const singleUpload = multer({storage}).single("file");
