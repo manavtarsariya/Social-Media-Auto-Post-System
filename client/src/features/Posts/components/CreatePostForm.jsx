@@ -28,10 +28,6 @@ const CreatePostForm = () => {
     }
 
 
-    // useEffect(() => {
-    //     console.log(formData);
-    // }, [formData]);
-
     const submitHandler = (e) => {
         e.preventDefault(); 
 
