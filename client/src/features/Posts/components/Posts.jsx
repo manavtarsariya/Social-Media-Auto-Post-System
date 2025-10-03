@@ -1,6 +1,36 @@
+// import { Delete } from 'lucide-react';
+// import { toast } from 'sonner';
 import Postcard from './Postcard';
+import { deletePost } from '../api/post';
+import { toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const Posts = ({ filterPosts }) => {
+const Posts = ({ filterPosts, setFilterPosts }) => {
+
+
+  const DeleteHandler = async (id) => {
+    console.log("Delete post with ID:", id);
+
+    setFilterPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
+
+    try {
+
+      const response = await deletePost(id);
+
+      if (response?.data?.success) {
+        toast.success(response?.data?.message);
+      }
+
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      toast.error(error?.response?.data?.message);
+
+    }
+
+  }
+
+
+
   return (
     <div className='text-3xl font-bold text-center w-full p-10'>
       All Posts
@@ -10,7 +40,7 @@ const Posts = ({ filterPosts }) => {
         {filterPosts.length > 0 ? (
           filterPosts.map((post) => (
             <div key={post._id} className='p-4'>
-              <Postcard post={post} />
+              <Postcard post={post} DeleteHandler={DeleteHandler} />
             </div>
           ))
         ) : (

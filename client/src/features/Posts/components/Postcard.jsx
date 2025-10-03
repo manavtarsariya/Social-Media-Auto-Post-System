@@ -1,4 +1,16 @@
-import { Calendar, Clock, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Calendar, Clock, PenBox, Sparkles, Trash2Icon } from 'lucide-react';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 
 
@@ -10,9 +22,7 @@ const statusColors = {
 };
 
 
-const Postcard = ({ post }) => {
-
-
+const Postcard = ({ post, DeleteHandler }) => {
     {
         return (
             <div className="w-full  max-w-md bg-[#1a1d24] rounded-2xl overflow-hidden shadow-2xl border border-slate-800/50 hover:border-blue-500/30 transition-all duration-300 hover:shadow-blue-500/10">
@@ -80,17 +90,63 @@ const Postcard = ({ post }) => {
                         </p>
                     </div>
 
-                    <div className="pt-3 border-t border-slate-800/50 space-y-2">
+                    <div className='mt-2'>
+                        <h3 className="text-slate-100 font-semibold text-sm mb-1 ">Platforms</h3>
+                        <div className="flex items-center gap-3 justify-center mt-2">
+                            {post?.platforms?.map((platform, index) => (
+                                <div key={index} className="px-3 py-1 bg-slate-800/70 text-blue-400 text-xs font-medium rounded-full border border-slate-700/50 hover:border-blue-500/50 hover:bg-slate-800 transition-all duration-200">
+                                    {platform.charAt(0).toUpperCase() + platform.slice(1)}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
 
-                        <div className="flex items-center gap-2 text-slate-300">
-                            <Calendar className="w-4 h-4 text-blue-400" />
-                            <span className="text-sm font-medium">{post?.scheduleTime}</span>
+                    <div className="pt-3 border-t border-slate-800/50 space-y-2 flex justify-between">
+
+                        <div>
+
+
+                            <div className="flex items-center gap-2 text-slate-300">
+                                <Calendar className="w-4 h-4 text-blue-400" />
+                                <span className="text-sm font-medium">{post?.scheduleTime?.split("T")[0] + " - " + post?.scheduleTime?.split("T")[1].substr(0, 5) + "  UST"}</span>
+                            </div>
+
+                            <div className="flex items-center gap-2 text-slate-500">
+                                <Clock className="w-3.5 h-3.5" />
+                                <span className="text-xs">{post?.createdAt}</span>
+                            </div>
                         </div>
 
-                        <div className="flex items-center gap-2 text-slate-500">
-                            <Clock className="w-3.5 h-3.5" />
-                            <span className="text-xs">{post?.createdAt}</span>
+                        <div className='text-white text-sm font-semibold px-3 py-1 rounded-full flex gap-2 justify-center items-center'>
+
+                            <AlertDialog>
+                                <AlertDialogTrigger className={'border-1 p-2.5 rounded-full hover:bg-red-500/10 hover:cursor-pointer'}>
+                                    <Trash2Icon className="w-5 h-5 text-red-500 hover:text-red-600 " />
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                        <AlertDialogDescription className={`text-lg text-gray-300`}>
+                                            <span>Post Title is : <span className='font-bold text-emerald-500 '>{post?.title}</span></span>
+                                           {`
+                                            `}
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel >Cancel</AlertDialogCancel>
+                                        <AlertDialogAction  onClick={() => { DeleteHandler(post._id) }} className={`text-red-500 border-1`}>Continue</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                            
+
+                            <Button variant="outline" className={'border-1 p-5 rounded-full hover:bg-blue-500/10 hover:cursor-pointer'} >
+                                <PenBox className="w-5 h-5 text-blue-400 hover:text-blue-500" />
+                            </Button>
+
                         </div>
+
+
                     </div>
                 </div>
             </div>
