@@ -5,7 +5,7 @@ import cloudinary from "../utils/cloudinary.js";
 
 export const createPost = async (req, res) => {
 
-    const { userId, title, content, hashtags, scheduleTime, aiCaption } = req.body;
+    const { userId, title, content, hashtags, scheduleTime, platforms , aiCaption } = req.body;
 
     if (!title) {
         return res.status(400).json({
@@ -22,9 +22,47 @@ export const createPost = async (req, res) => {
         const image = req.file
         const fileuri = getDataUri(image)
         const result = await cloudinary.uploader.upload(fileuri.content)
-        console.log("cloudinary",result);
         imageUrl = result.secure_url;
     }
+
+    let status = "pending";
+    if (scheduleTime) {
+        const scheduledDate = new Date(scheduleTime);
+
+        if (scheduledDate > new Date()) {   
+            status = "scheduled";
+
+        }else{
+            return res.status(400).json({
+                message: "Schedule time must be in the future",
+                success: false
+            });
+        } 
+    } 
+
+    let platformsArray = [];
+
+    if (typeof(platforms) === "string") {
+        platformsArray = JSON.parse(platforms);
+    }else{
+        platformsArray = platforms || [];
+    }
+
+    if(platformsArray.length >= 1 && scheduleTime === ""){
+        return res.status(400).json({
+            message: "Please provide schedule time for selected platforms",
+            success: false
+        });
+
+    }
+
+    if(platformsArray.length === 0 && scheduleTime !== ""){
+        return res.status(400).json({
+            message: "Please select at least one platform for scheduled post",
+            success: false
+        });
+    }
+
 
     try {
 
@@ -32,11 +70,14 @@ export const createPost = async (req, res) => {
             userId,
             title,
             content,
+            status,
             imageUrl : imageUrl || "",
             hashtags : hashstagsArray,
             scheduleTime,
+            platforms: platformsArray,
             aiCaption,
         });
+
 
         return res.status(201).json({
             message: "Post created successfully",

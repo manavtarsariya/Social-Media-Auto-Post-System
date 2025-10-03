@@ -34,11 +34,12 @@ const AllPosts = () => {
     }
   };
 
+
   return (
     <div>
       <Navbar />
       <FilterCard onFilter={handleFilter} />
-      <Posts filterPosts={filterPosts} />
+      <Posts filterPosts={filterPosts} setFilterPosts={setFilterPosts} />
     </div>
   )
 }

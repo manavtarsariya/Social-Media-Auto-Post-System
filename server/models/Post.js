@@ -15,15 +15,23 @@ const PostSchema = new mongoose.Schema({
     imageUrl: {
         type: String
     },
+
     hashtags: [String],
+
     scheduleTime: {
         type: Date
     },  // when to auto-post
+
     status: {
         type: String,
         enum: ["pending", "scheduled", "posted", "failed"],
         default: "pending"
     },
+    
+    platforms: [{
+        type: String,
+        enum: ["twitter", "linkedin", "facebook"],
+    }], 
     aiCaption: {
         type: String
     }, // optional AI generated caption/hashtags

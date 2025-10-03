@@ -1,9 +1,13 @@
 import React, { useState } from 'react'
 import { createPost } from '../api/post';
-import { toast } from 'sonner';
+// import { toast } from 'sonner';
+import { toast} from 'react-toastify';
 import { Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 const CreatePostForm = () => {
+
+    const navigate = useNavigate()
 
 
     const [temp, setTemp] = useState(false)
@@ -14,6 +18,7 @@ const CreatePostForm = () => {
         file: null,
         hashtags: '',
         scheduleTime: '',
+        platforms: [],
         caption: ''
 
     });
@@ -33,6 +38,22 @@ const CreatePostForm = () => {
         });
     }
 
+    const platformChangeHandler = (e) => {
+        const { value, checked } = e.target;
+
+        let updatedPlatforms = [...formData.platforms];
+
+        if (checked) {
+            updatedPlatforms.push(value);
+        } else {
+            updatedPlatforms = updatedPlatforms.filter((platform) => platform !== value);
+        }
+        setFormData({
+            ...formData,
+            platforms: updatedPlatforms
+        });
+    }
+
 
     const submitHandler = async (e) => {
         e.preventDefault();
@@ -42,6 +63,7 @@ const CreatePostForm = () => {
         data.append('content', formData.content);
         data.append('hashtags', formData.hashtags);
         data.append('scheduleTime', formData.scheduleTime);
+        data.append('platforms', JSON.stringify(formData.platforms));
         data.append('caption', formData.caption);
 
         if (formData.file) {
@@ -57,13 +79,15 @@ const CreatePostForm = () => {
 
             if (res.data.success) {
 
-                toast.success(res.data.message);
+                toast.success(res?.data?.message);
+                navigate('/posts');
             }
 
 
 
         } catch (error) {
             console.log(error);
+            toast.error(error?.response?.data?.message || "Something went wrong");
 
         } finally {
             setTemp(false);
@@ -133,6 +157,47 @@ const CreatePostForm = () => {
                         value={formData.scheduleTime}
                         onChange={changeHandler}
                         className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500' />
+                </div>
+
+                <div className='mt-4 flex items-center'>
+                    <label htmlFor="platforms" className='block text-lg font-medium text-gray-700 w-1/4'>Platforms</label>
+                    <div className='flex space-x-5'>
+                        <div>
+                            <input
+                                type="checkbox"
+                                id='twitter'
+                                name='platforms'
+                                value='twitter'
+                                onChange={platformChangeHandler}
+                                className='mr-2'
+                            />
+                            <label htmlFor="twitter" className='text-gray-700'>Twitter</label>
+                        </div>
+                        <div>
+                            <input
+                                type="checkbox"
+                                id='linkedin'
+                                name='platforms'
+                                value='linkedin'
+                                onChange={platformChangeHandler}
+                                className='mr-2 leading-tight'
+                            />
+                            <label htmlFor="linkedin" className='text-gray-700'>LinkedIn</label>
+                        </div>
+                        <div>
+                            <input
+                                type="checkbox"
+                                id='facebook'
+                                name='platforms'
+                                value='facebook'
+                                onChange={platformChangeHandler}
+                                className='mr-2 leading-tight'
+                            />
+                            <label htmlFor="facebook" className='text-gray-700'>Facebook</label>
+                        </div>
+                    </div>
+
+
                 </div>
 
                 <div className='mt-4 flex justify-center items-center'>
