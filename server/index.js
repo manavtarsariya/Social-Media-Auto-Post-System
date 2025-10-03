@@ -6,7 +6,8 @@ dotenv.config();
 
 import postRoutes from './routes/postRoutes.js';
 import userRoutes from './routes/userRoutes.js';
-import sheduler from './schedulers/postScheduler.js';
+// import sheduler from './schedulers/postScheduler.js';
+import mockApiRoutes from './routes/mockApiRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
