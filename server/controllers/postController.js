@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Post from "../models/Post.js";
 import getDataUri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
 export const createPost = async (req, res) => {
 
@@ -171,7 +172,7 @@ export const statusHandler = async (req, res) => {
 
         const { status } = req.body
 
-        
+
         const statusvalue = status ? "posted" : "failed";
 
         const response = await Post.findByIdAndUpdate(postId, {
@@ -188,4 +189,101 @@ export const statusHandler = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
 
     }
+}
+
+export const captiongenerator = async (req, res) => {
+    try {
+
+        const { title, content } = req.body
+
+        if (!content || !title) {
+            return res.status(400).json({
+                success: false,
+                message: 'Title and content are required.'
+            });
+        }
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+        const prompt = `
+
+        Act as a professional social media copywriter. Your single task is to write one compelling caption based on the provided Title and Content.
+
+        ---
+        INSTRUCTIONS:
+        - The tone must be: ${"Engaging and Conversational"}
+        - The length should be approximately: ${"2 to 3 short sentences (approximately 150 characters)"}
+        - Use the Title as the main subject and the Content for details.
+        - CRITICAL: Do NOT include hashtags.
+        - CRITICAL: Do NOT include emojis.
+        - CRITICAL: Do NOT include any text other than the caption itself.
+        ---
+
+        PROVIDED DETAILS:
+        - Title: "${title}"
+        - Content: "${content}"`;
+
+        
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const aiCaption = response.text();
+
+        // 4. Send the result from Gemini back to your React frontend
+        // console.log(aiCaption)
+        res.status(200).json({
+            success: true,
+            caption: aiCaption
+        });
+
+    } catch (error) {
+        console.error("Error in Gemini API for caption generation", error);
+        res.status(500).json({ error: 'Failed to generate AI caption.' });
+    }
+}
+
+
+export const hashtagsgenerator = async (req, res) => {
+    try {
+        const { title, content } = req.body;
+
+        if (!title || !content) {
+            return res.status(400).json({ 
+                success:false,
+                message: 'Title and content are required.' });
+        }
+
+        const prompt = `
+      Act as a social media expert specializing in content reach. Your only task is to generate the most relevant hashtags based on the provided Title and Content.
+        ---
+        CRITICAL RULES:
+        1.  **Generate exactly 4 to 5 of the most relevant hashtags.**
+        2.  The output MUST be a string of words separated ONLY by commas.
+        3.  DO NOT use spaces after the commas.
+        4.  DO NOT use the '#' symbol.
+        5.  DO NOT add any explanations, labels, or any text other than the comma-separated hashtags.
+
+        EXAMPLE OUTPUT: hashtagone,hashtagtwo,hashtagthree
+        ---
+      PROVIDED TEXT:
+      - Title: "${title}"
+      - Content: "${content}"
+    `;
+
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const result = await model.generateContent(prompt);
+        const responseText = result.response.text().trim();
+
+        // console.log("hashtags: ",responseText);
+
+     
+        res.status(200).json({ 
+            success:true,
+            hashtags: responseText });
+
+    } catch (error) {
+        console.error("Error in Gemini API for hashtags generation:", error);
+        res.status(500).json({ error: 'Failed to generate hashtags.' });
+    }
+
 }

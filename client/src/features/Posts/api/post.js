@@ -15,3 +15,17 @@ export const getAllPosts = () => API.get('/getallposts');
 
 // Delete a post by ID
 export const deletePost = (postId) => API.delete(`/deletepost/${postId}`);
+
+export const generateCaption = (data) => API.post(`/generate-caption`,data,{
+    
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
+
+export const generateHashtags = (data) => API.post(`/generate-hashtags`,data,{
+    
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});

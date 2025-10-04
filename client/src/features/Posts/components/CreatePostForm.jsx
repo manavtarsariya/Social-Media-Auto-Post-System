@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { createPost } from '../api/post';
-// import { toast } from 'sonner';
-import { toast} from 'react-toastify';
-import { Loader2 } from 'lucide-react';
+import { createPost, generateCaption, generateHashtags, } from '../api/post';
+import { toast } from 'react-toastify';
+import { Loader2, SpaceIcon, Sparkle, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router';
+import { Button } from '@/components/ui/button';
 
 const CreatePostForm = () => {
 
@@ -11,6 +11,8 @@ const CreatePostForm = () => {
 
 
     const [temp, setTemp] = useState(false)
+    const [temp1, setTemp1] = useState(false)
+    const [temp2, setTemp2] = useState(false)
 
     const [formData, setFormData] = useState({
         title: '',
@@ -19,7 +21,7 @@ const CreatePostForm = () => {
         hashtags: '',
         scheduleTime: '',
         platforms: [],
-        caption: ''
+        aiCaption: ''
 
     });
 
@@ -36,6 +38,64 @@ const CreatePostForm = () => {
             ...formData,
             file: e.target?.files?.[0]
         });
+    }
+
+    const captiongenerator = async () => {
+
+        try {
+
+            const data = {
+                title: formData.title,
+                content: formData.content
+            }
+
+            setTemp1(true);
+
+            const res = await generateCaption(data)
+
+            console.log(res.data.caption)
+            setFormData({
+                ...formData,
+                aiCaption: res.data.caption
+            })
+
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.message)
+
+        } finally {
+            setTemp1(false);
+        }
+
+    }
+
+    const hashtagsgenerator = async () => {
+
+        try {
+            const data = {
+                title: formData.title,
+                content: formData.content
+            }
+
+            setTemp2(true);
+
+            const res = await generateHashtags(data)
+
+            console.log(res.data.caption)
+            setFormData({
+                ...formData,
+                hashtags: res.data.hashtags
+            })
+
+
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.message)
+
+        } finally {
+            setTemp2(false)
+        }
+
     }
 
     const platformChangeHandler = (e) => {
@@ -64,7 +124,7 @@ const CreatePostForm = () => {
         data.append('hashtags', formData.hashtags);
         data.append('scheduleTime', formData.scheduleTime);
         data.append('platforms', JSON.stringify(formData.platforms));
-        data.append('caption', formData.caption);
+        data.append('aiCaption', formData.aiCaption);
 
         if (formData.file) {
             data.append('file', formData.file);
@@ -146,9 +206,24 @@ const CreatePostForm = () => {
                         value={formData.hashtags}
                         onChange={changeHandler}
                         className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500' />
+
+                     <div className="ml-4"
+                        onClick={hashtagsgenerator} >
+
+                        {
+                            temp2 ?
+                                <div className='p-3'>
+                                    <Loader2 className='animate-spin' />
+                                </div> :
+                                <div className='p-2 border-1 rounded-full hover:cursor-pointer hover:bg-blue-200' >
+                                    <Sparkles color='' fill='blue'></Sparkles>
+                                </div>
+
+                        }
+                    </div>
                 </div>
 
-                <div className='mt-4 flex'>
+                <div className='mt-4 flex justify-center items-center'>
                     <label htmlFor="schedule" className='block text-lg font-medium text-gray-700 w-1/4'>Schedule Time</label>
                     <input
                         type="datetime-local"
@@ -201,16 +276,31 @@ const CreatePostForm = () => {
                 </div>
 
                 <div className='mt-4 flex justify-center items-center'>
-                    <label htmlFor="caption" className='block text-lg font-medium text-gray-700 w-1/4'>caption</label>
-                    <input
-                        id='caption'
-                        name='caption'
-                        value={formData.caption}
+                    <label htmlFor="aiCaption" className='block text-lg font-medium text-gray-700 w-1/4'>caption</label>
+                    <textarea
+                        id='aiCaption'
+                        name='aiCaption'
+                        value={formData.aiCaption}
                         onChange={changeHandler}
-                        className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500' />
+                        className='h-20 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500' />
+
+                    <div className="ml-4"
+                        onClick={captiongenerator}
+                    >
+
+                        {
+                            temp1 ?
+                                <div className='p-3'>
+                                    <Loader2 className='animate-spin' />
+                                </div> :
+                                <div className='p-2 border-1 rounded-full hover:cursor-pointer hover:bg-blue-200'>
+                                    <Sparkles color='' fill='blue'></Sparkles>
+                                </div>
+                        }
+                    </div>
                 </div>
                 <div>
-                    <button type='submit' className='mt-6 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 w-full flex justify-center items-center' disabled={temp}>
+                    <button type='submit' className='mt-6 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 w-full flex justify-center items-center hover:cursor-pointer' disabled={temp1 || temp2}>
                         {
                             temp ?
                                 <>
