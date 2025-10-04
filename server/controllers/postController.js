@@ -5,7 +5,7 @@ import cloudinary from "../utils/cloudinary.js";
 
 export const createPost = async (req, res) => {
 
-    const { userId, title, content, hashtags, scheduleTime, platforms , aiCaption } = req.body;
+    const { userId, title, content, hashtags, scheduleTime, platforms, aiCaption } = req.body;
 
     if (!title) {
         return res.status(400).json({
@@ -18,7 +18,7 @@ export const createPost = async (req, res) => {
 
     let imageUrl = "";
 
-    if(req.file){
+    if (req.file) {
         const image = req.file
         const fileuri = getDataUri(image)
         const result = await cloudinary.uploader.upload(fileuri.content)
@@ -29,26 +29,26 @@ export const createPost = async (req, res) => {
     if (scheduleTime) {
         const scheduledDate = new Date(scheduleTime);
 
-        if (scheduledDate > new Date()) {   
+        if (scheduledDate > new Date()) {
             status = "scheduled";
 
-        }else{
+        } else {
             return res.status(400).json({
                 message: "Schedule time must be in the future",
                 success: false
             });
-        } 
-    } 
+        }
+    }
 
     let platformsArray = [];
 
-    if (typeof(platforms) === "string") {
+    if (typeof (platforms) === "string") {
         platformsArray = JSON.parse(platforms);
-    }else{
+    } else {
         platformsArray = platforms || [];
     }
 
-    if(platformsArray.length >= 1 && scheduleTime === ""){
+    if (platformsArray.length >= 1 && scheduleTime === "") {
         return res.status(400).json({
             message: "Please provide schedule time for selected platforms",
             success: false
@@ -56,7 +56,7 @@ export const createPost = async (req, res) => {
 
     }
 
-    if(platformsArray.length === 0 && scheduleTime !== ""){
+    if (platformsArray.length === 0 && scheduleTime !== "") {
         return res.status(400).json({
             message: "Please select at least one platform for scheduled post",
             success: false
@@ -71,8 +71,8 @@ export const createPost = async (req, res) => {
             title,
             content,
             status,
-            imageUrl : imageUrl || "",
-            hashtags : hashstagsArray,
+            imageUrl: imageUrl || "",
+            hashtags: hashstagsArray,
             scheduleTime,
             platforms: platformsArray,
             aiCaption,
@@ -102,13 +102,13 @@ export const createPost = async (req, res) => {
 export const getallPosts = async (req, res) => {
     try {
         const posts = await Post.find().populate('userId', 'username email').sort({ createdAt: -1 });;
-        if(posts.length === 0){
+        if (posts.length === 0) {
             return res.status(404).json({
                 message: "No posts found",
                 success: false
             });
         }
-        
+
         return res.status(200).json({
             message: "Posts fetched successfully",
             success: true,
@@ -116,7 +116,7 @@ export const getallPosts = async (req, res) => {
         });
     } catch (error) {
         console.error("Error fetching posts:", error);
-        return res.status(500).json({   
+        return res.status(500).json({
             message: "Failed to fetch posts",
             success: false
         });
@@ -124,12 +124,12 @@ export const getallPosts = async (req, res) => {
 }
 
 export const deletePost = async (req, res) => {
-    const { postId } = req.params;  
+    const { postId } = req.params;
     // console.log("Deleting post with ID:", postId);
 
-    if( !mongoose.Types.ObjectId.isValid(postId)){
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
         return res.status(400).json({
-            message: "Invalid post ID", 
+            message: "Invalid post ID",
             success: false
         });
     }
@@ -152,5 +152,40 @@ export const deletePost = async (req, res) => {
             message: "Failed to delete post",
             success: false
         });
-    }   
+    }
+}
+
+
+
+export const statusHandler = async (req, res) => {
+    try {
+
+        const { postId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(postId)) {
+            return res.status(400).json({
+                message: "Invalid post ID",
+                success: false
+            });
+        }
+
+        const { status } = req.body
+
+        
+        const statusvalue = status ? "posted" : "failed";
+
+        const response = await Post.findByIdAndUpdate(postId, {
+            status: statusvalue
+        }, { new: true })
+
+        return res.status(200).json({
+            success: true,
+            message: "status updated"
+        })
+
+    } catch (error) {
+        console.error("Error in statusHandler handler:", error);
+        return res.status(500).json({ message: "Internal server error" });
+
+    }
 }

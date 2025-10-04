@@ -7,17 +7,17 @@ export const twitterHandler = async (req, res) => {
 
         if (content) {
 
-            console.log('Twitter Post Data:', content);
+            // console.log('Twitter Post Data:', content);
 
             return res.status(200).json({
                 success: true,
-                message: 'Post successfully scheduled on Twitter'
+                message: 'Post successfully posted on Twitter'
             });
         } else {
             // Simulate failure
             return res.status(200).json({
-                status: false,
-                message: 'Post content is missing'
+                success: false,
+                message: 'Post not posted on twitter because content is missing'
             });
         }
 
@@ -37,16 +37,16 @@ export const linkedinHandler = async (req, res) => {
 
         if (content) {
 
-            console.log('linkedIn Post Data:', content);
+            // console.log('linkedIn Post Data:', content);
             return res.status(200).json({
                 success: true,
-                message: 'Post successfully scheduled on linkedin'
+                message: 'Post successfully posted on linkedin'
             });
         } else {
 
             return res.status(200).json({
-                status: false,
-                message: 'Post content is missing'
+                success: false,
+                message: 'Post not posted on linkedin because content is missing'
             });
         }
 
@@ -66,16 +66,16 @@ export const facebookHandler = async (req, res) => {
         const { content } = req.body;
 
         if (content) {
-            console.log('Facebook Post Data:', content);
+            // console.log('Facebook Post Data:', content);
             return res.status(200).json({
                 success: true,
-                message: 'Post successfully scheduled on Facebook'
+                message: 'Post successfully posted on Facebook'
             });
         } else {
 
             return res.status(200).json({
                 success: false,
-                message: 'Post content is missing'
+                message: 'Post not posted on facebook because content is missing'
             });
         }
     } catch (error) {

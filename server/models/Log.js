@@ -6,17 +6,15 @@ const LogSchema = new mongoose.Schema({
         ref: "Post",
         required: true
     },
-    platform: {
+    platform: [{
         type: String,
-        enum: ["twitter", "linkedin", "facebook"],
-        required: true
-    }, // mock APIs
+    }], // mock APIs
     status: {
         type: String,
-        enum: ["success", "failure"],
+        enum: ["true", "false"],
         required: true
     },
-    response: { type: String }, // store API response or error
+    finaleresponse: { type: String }, // store API response or error
 
 },{ timestamps: true });
 
