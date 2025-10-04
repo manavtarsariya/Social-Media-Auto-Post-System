@@ -1,41 +1,111 @@
 import cron from 'node-cron';
 
 
-const allscheduledPosts = async () => {
-    console.log("Fetching all scheduled posts...");
-    
-    const response = await fetch('http://localhost:8000/api/posts/getallPosts');
-    const data = await response.json();
-    
-    const filtereddata= data.posts.filter(post => post.status === 'scheduled');
-        console.log("Fetched posts:", filtereddata);
+async function callAPI(item) {
 
 
-    const platformslength = filtereddata.length;
+  try {
+    for (let index = 0; index < item.platforms.length; index++) {
 
-    filtereddata.forEach((item , index) => {
-      
-    });
+      try {
+        const res = await fetch(`http://localhost:8000/mock/api/${item.platforms[index]}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            content: (item.content)
+          })
+        })
+
+        const answer = await res.json();
+        // console.log(answer)
 
 
+        const response = await fetch("http://localhost:8000/api/log/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            postId: item._id,
+            platform: item.platforms,
+            status: answer.success,
+            finaleresponse: answer.message
+          })
+        })
 
-    // for (let index = 0; index < platformslength ; index++) {
-      
-      
-    // }
+        const printlog = await response.json()
 
-    
+        console.log("log data :", printlog)
 
-    console.log("Scheduled posts:", filtereddata);
+      } catch (error) {
+        console.log("scheduler error :", error);
+      }
+
+    }
+
+  } catch (error) {
+    console.log(error)
+  }
+
+
 }
 
 
-const sheduler = cron.schedule('* * * * * *', () => {
-  console.log('running a task every minute'); 
-  
+const allscheduledPosts = async () => {
+  console.log("Fetching all scheduled posts...");
+
+  const response = await fetch('http://localhost:8000/api/posts/getallPosts');
+  const data = await response.json();
+
+  const filtereddata = data.posts.filter(post => post.status === 'scheduled');
+  // console.log("Fetched posts:", filtereddata);
+
+
+  // const platformslength = filtereddata.length;
+
+  filtereddata.forEach(async (item) => {
+
+    const now = new Date();
+    const scheduledDate = new Date(item.scheduleTime);
+
+    const nowTrimmed = new Date(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+      now.getUTCHours(),
+      now.getUTCMinutes()
+    );
+
+    const scheduledTrimmed = new Date(
+      scheduledDate.getUTCFullYear(),
+      scheduledDate.getUTCMonth(),
+      scheduledDate.getUTCDate(),
+      scheduledDate.getUTCHours(),
+      scheduledDate.getUTCMinutes()
+    );
+
+    if (nowTrimmed.getTime() === scheduledTrimmed.getTime()) {
+
+      console.log('Scheduled time matched! Triggering API...');
+      console.log(item)
+
+      
+
+        callAPI(item);
+
+      
+    }
+  });
+
+}
+
+
+const sheduler = cron.schedule('* * * * *', () => {
+  console.log('running a task every minute');
+
   allscheduledPosts();
-
-
 
 
 });
