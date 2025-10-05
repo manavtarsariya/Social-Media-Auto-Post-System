@@ -25,8 +25,8 @@ export default function Navbar() {
           {/* Profile */}
           <div className="flex items-center space-x-2">
             
-            <Button variant={"outline"} className={`text-black`}>LogIn</Button>
-            <Button variant={"outline"} className={`text-black`}>SignUp</Button>
+            <Button variant={"outline"} className={`text-black cursor-not-allowed`}>LogIn</Button>
+            <Button variant={"outline"} className={`text-black cursor-not-allowed`}>SignUp</Button>
 
           </div>
         </div>
