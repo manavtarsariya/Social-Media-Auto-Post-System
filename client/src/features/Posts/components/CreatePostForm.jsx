@@ -199,7 +199,7 @@ const CreatePostForm = () => {
                 </div>
 
                 <div className='mt-4 flex justify-center items-center'>
-                    <label htmlFor="hashtages" className='block text-lg font-medium text-gray-700 w-1/4'>Hashtags</label>
+                    <label htmlFor="hashtages" className='block text-lg font-medium text-gray-700 w-1/4 '>Hashtags</label>
                     <input
                         id='hashtages'
                         name='hashtags'
@@ -207,8 +207,9 @@ const CreatePostForm = () => {
                         onChange={changeHandler}
                         className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500' />
 
-                     <div className="ml-4"
-                        onClick={hashtagsgenerator} >
+                     <div className={`ml-4 ${temp1 && "pointer-events-none" } ${temp1 && "opacity-40" }`}
+                        onClick={hashtagsgenerator} 
+                        >
 
                         {
                             temp2 ?
@@ -275,7 +276,7 @@ const CreatePostForm = () => {
 
                 </div>
 
-                <div className='mt-4 flex justify-center items-center'>
+                <div className='mt-4 flex justify-center items-center' >
                     <label htmlFor="aiCaption" className='block text-lg font-medium text-gray-700 w-1/4'>caption</label>
                     <textarea
                         id='aiCaption'
@@ -284,7 +285,7 @@ const CreatePostForm = () => {
                         onChange={changeHandler}
                         className='h-20 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500' />
 
-                    <div className="ml-4"
+                    <div className={`ml-4 ${temp2 && "pointer-events-none" } ${temp2 && "opacity-40" }`}
                         onClick={captiongenerator}
                     >
 
@@ -300,7 +301,7 @@ const CreatePostForm = () => {
                     </div>
                 </div>
                 <div>
-                    <button type='submit' className='mt-6 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 w-full flex justify-center items-center hover:cursor-pointer' disabled={temp1 || temp2}>
+                    <button type='submit' className={`mt-6  ${(temp1 || temp2) ? "bg-blue-400" : "bg-blue-600" }  text-white px-4 py-2 rounded-lg hover:bg-blue-700 w-full flex justify-center items-center hover:cursor-pointer`} disabled={temp1 || temp2}>
                         {
                             temp ?
                                 <>

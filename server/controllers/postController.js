@@ -102,7 +102,7 @@ export const createPost = async (req, res) => {
 
 export const getallPosts = async (req, res) => {
     try {
-        const posts = await Post.find().populate('userId', 'username email').sort({ createdAt: -1 });;
+        const posts = await Post.find().sort({ createdAt: -1 });;
         if (posts.length === 0) {
             return res.status(404).json({
                 message: "No posts found",
