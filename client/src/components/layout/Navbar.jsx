@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { Button } from "../ui/button";
 
 export default function Navbar() {
 
@@ -14,7 +15,7 @@ export default function Navbar() {
           </div>
 
           {/* Links */}
-          <div className="hidden md:flex space-x-6 text-gray-700">
+          <div className="hidden md:flex space-x-6 text-gray-700 ml-20">
             <Link to="/" className="hover:text-blue-600">Home</Link>
             <Link to="/createpost" className=" hover:text-blue-600">Create Post</Link>
             <Link to="/posts" className=" hover:text-blue-600">Posts</Link>
@@ -22,18 +23,15 @@ export default function Navbar() {
           </div>
 
           {/* Profile */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
             <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
             onClick={()=>navigate("/createpost")}
             >
               + Create
             </button>
-            <Link to="/profile" className="text-blue-700 hover:text-blue-600">
-              Profile
-            </Link>
-            <Link to="/logout" className="text-red-500 hover:text-red-400">
-              Logout
-            </Link>
+            
+            <Button variant={"outline"}>LogIn</Button>
+            <Button variant={"outline"}>SignUp</Button>
           </div>
         </div>
       </div>

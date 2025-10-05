@@ -158,12 +158,13 @@ const CreatePostForm = () => {
     }
 
     return (
-        <div className=' border-0 height-96 w-2/4 mx-auto rounded-2xl shadow-blue-400 p-7 
-        bg-gradient-to-bl from-pink-500/60 to-orange-400/90 shadow-2xl '>
+        <div className=' border-1 border-blue-500 height-96 w-2/4 mx-auto rounded-2xl shadow-blue-400 p-7 
+        bg-gradient-to-bl from-pink-500/60 to-orange-400/90 shadow-lg '>
 
             <form action="" onSubmit={submitHandler} className='mt-4'>
 
-                <h1 className='font-bold text-5xl text-center p-2 mb-10 text-transparent bg-clip-text bg-gradient-to-bl from-yellow-200 to-red-500'>Create Post </h1>
+                <h1 className='font-bold text-5xl text-center p-2 mb-5 text-transparent bg-clip-text bg-gradient-to-bl from-yellow-200 to-red-500'>Create Post </h1>
+                <hr className='mb-14'/>
 
                 <div className='mt-4 flex justify-center items-center'>
                     <label htmlFor="title" className='block text-lg font-medium text-white w-1/4'>Title</label>

@@ -25,7 +25,7 @@ const statusColors = {
 const Postcard = ({ post, DeleteHandler }) => {
     {
         return (
-            <div className="w-full  max-w-md bg-[#1a1d24] rounded-2xl overflow-hidden shadow-2xl border border-slate-800/50 hover:border-blue-500/30 transition-all duration-300 hover:shadow-blue-500/10">
+            <div className="w-full h-230  max-w-md bg-[#1a1d24] rounded-2xl overflow-hidden shadow-2xl border border-slate-600/50 hover:border-blue-500/30 transition-all duration-300 hover:shadow-blue-500/10">
 
                 <div className="p-5 flex items-center justify-between border-b border-slate-800/50">
                     <div className="flex items-center gap-3">
@@ -69,16 +69,18 @@ const Postcard = ({ post, DeleteHandler }) => {
                         {post?.content}
                     </p>
 
+                    <div className=''>
 
-                    <div className="flex flex-wrap gap-2">
-                        {post?.hashtags?.map((tag, index) => (
-                            <span
-                                key={index}
-                                className="px-3 py-1 bg-slate-800/70 text-blue-400 text-xs font-medium rounded-full border border-slate-700/50 hover:border-blue-500/50 hover:bg-slate-800 transition-all duration-200"
-                            >
-                                {tag}
-                            </span>
-                        ))}
+                        <div className="flex flex-wrap gap-2 ">
+                            {post?.hashtags?.map((tag, index) => (
+                                <span
+                                    key={index}
+                                    className="px-3 py-1 bg-slate-800/70 text-blue-400 text-xs font-medium rounded-full border border-slate-700/50 hover:border-blue-500/50 hover:bg-slate-800 transition-all duration-200"
+                                >
+                                    {tag}
+                                </span>
+                            ))}
+                        </div>
                     </div>
 
 
@@ -107,13 +109,33 @@ const Postcard = ({ post, DeleteHandler }) => {
 
 
                             <div className="flex items-center gap-2 text-slate-300">
-                                <Calendar className="w-4 h-4 text-blue-400" />
-                                <span className="text-sm font-medium">{post?.scheduleTime?.split("T")[0] + " - " + post?.scheduleTime?.split("T")[1].substr(0, 5) + "  UST"}</span>
+                                <Calendar className="w-4 h-4 text-blue-400 mt-1" />
+                                <span className="text-sm mt-1 font-medium">
+                                    {new Date(post?.scheduleTime).toLocaleString("en-IN", {
+                                        timeZone: "Asia/Kolkata",
+                                        year: "numeric",
+                                        month: "short",
+                                        day: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        hour12: true
+                                    })} IST
+                                </span>
                             </div>
 
-                            <div className="flex items-center gap-2 text-slate-500">
-                                <Clock className="w-3.5 h-3.5" />
-                                <span className="text-xs">{post?.createdAt}</span>
+                            <div className="flex items-center gap-2 text-slate-500 ">
+                                <Clock className="w-4 h-4 mt-1" />
+                                <span className="text-sm mt-1">
+                                     {new Date(post?.createdAt).toLocaleString("en-IN", {
+                                        timeZone: "Asia/Kolkata",
+                                        year: "numeric",
+                                        month: "short",
+                                        day: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        hour12: true
+                                    })} IST
+                                    </span>
                             </div>
                         </div>
 
@@ -128,17 +150,17 @@ const Postcard = ({ post, DeleteHandler }) => {
                                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                                         <AlertDialogDescription className={`text-lg text-gray-300`}>
                                             <span>Post Title is : <span className='font-bold text-emerald-500 '>{post?.title}</span></span>
-                                           {`
+                                            {`
                                             `}
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
-                                        <AlertDialogCancel >Cancel</AlertDialogCancel>
-                                        <AlertDialogAction  onClick={() => { DeleteHandler(post._id) }} className={`text-red-500 border-1`}>Continue</AlertDialogAction>
+                                        <AlertDialogCancel className={`cursor-pointer`} >Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => { DeleteHandler(post._id) }} className={`text-red-500 border-1 cursor-pointer`}>Continue</AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>
-                            
+
 
                             <Button variant="outline" className={'border-1 p-5 rounded-full hover:bg-blue-500/10 hover:cursor-pointer'} >
                                 <PenBox className="w-5 h-5 text-blue-400 hover:text-blue-500" />

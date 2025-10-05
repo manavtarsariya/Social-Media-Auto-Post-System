@@ -10,21 +10,24 @@ import {
 
 const FilterCard = ({ onFilter }) => {
   return (
-    <div className='text-xl font-bold mt-20 p-5 '>
-      <div className='mt-3 h-28 p-4 w-fit mx-auto flex justify-center items-center gap-4 flex-col'>
-        <div>Filter Your Posts with Status</div>
+    <div className="pt-20 m-10 text-white">
+      <div className="h-20 mx-auto flex items-center justify-center gap-5 p-6 rounded-xl bg-gradient-to-br from-gray-800/60 to-gray-900/60 border border-gray-700 shadow-lg hover:shadow-blue-500/20 transition duration-200">
+        
+        <div className="text-lg font-semibold tracking-wide text-gray-200">
+          🔎 Filter Your Posts
+        </div>
 
         <Select onValueChange={onFilter}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[220px] bg-gray-800 text-gray-200 border border-gray-600 rounded-lg shadow-md hover:border-blue-400 transition duration-150">
             <SelectValue placeholder="Select a Status" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-gray-900 text-white border border-gray-700 rounded-lg shadow-xl">
             <SelectGroup>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="scheduled">Scheduled</SelectItem>
-              <SelectItem value="posted">Posted</SelectItem>
-              <SelectItem value="failed">Failed</SelectItem>
+              <SelectItem value="all">🌐 All</SelectItem>
+              <SelectItem value="pending">⏳ Pending</SelectItem>
+              <SelectItem value="scheduled">📅 Scheduled</SelectItem>
+              <SelectItem value="posted">✅ Posted</SelectItem>
+              <SelectItem value="failed">❌ Failed</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
