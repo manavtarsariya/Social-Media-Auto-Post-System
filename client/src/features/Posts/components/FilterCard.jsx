@@ -18,7 +18,7 @@ const FilterCard = ({ onFilter }) => {
         </div>
 
         <Select onValueChange={onFilter}>
-          <SelectTrigger className="w-[220px] bg-gray-800 text-gray-200 border border-gray-600 rounded-lg shadow-md hover:border-blue-400 transition duration-150">
+          <SelectTrigger className="w-[220px] bg-gray-800 text-gray-200 border border-gray-600 rounded-lg shadow-md hover:border-blue-400 transition duration-150 pl-4">
             <SelectValue placeholder="Select a Status" />
           </SelectTrigger>
           <SelectContent className="bg-gray-900 text-white border border-gray-700 rounded-lg shadow-xl">
