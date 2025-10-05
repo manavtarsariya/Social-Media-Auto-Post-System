@@ -222,14 +222,14 @@ export const captiongenerator = async (req, res) => {
         - Title: "${title}"
         - Content: "${content}"`;
 
-        
+
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const aiCaption = response.text();
 
         // 4. Send the result from Gemini back to your React frontend
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             caption: aiCaption
         });
@@ -246,9 +246,10 @@ export const hashtagsgenerator = async (req, res) => {
         const { title, content } = req.body;
 
         if (!title || !content) {
-            return res.status(400).json({ 
-                success:false,
-                message: 'Title and content are required.' });
+            return res.status(400).json({
+                success: false,
+                message: 'Title and content are required.'
+            });
         }
 
         const prompt = `
@@ -274,14 +275,65 @@ export const hashtagsgenerator = async (req, res) => {
         const responseText = result.response.text().trim();
 
 
-     
-        res.status(200).json({ 
-            success:true,
-            hashtags: responseText });
+
+        return res.status(200).json({
+            success: true,
+            hashtags: responseText
+        });
 
     } catch (error) {
         console.error("Error in Gemini API for hashtags generation:", error);
         res.status(500).json({ error: 'Failed to generate hashtags.' });
     }
 
+}
+
+
+export const sentimentanalyzer = async (req, res) => {
+
+    try {
+
+        const { textToAnalyze } = req.body;
+
+        if (!textToAnalyze) {
+            return res.status(400).json({ error: 'Text to analyze is required.' });
+        }
+
+        // The prompt we designed above
+        const prompt = `
+            Act as an expert sentiment analysis AI. Your single task is to analyze the tone of the provided text.
+
+            ---
+            INSTRUCTIONS:
+            1.  Determine the dominant sentiment from one of the following categories: "Positive", "Negative", "Neutral", or "Mixed".
+            2.  Provide a brief, one-sentence explanation for your choice.
+            3.  Your response MUST be a single, minified JSON object with two keys: "sentiment" and "explanation".
+            4.  Do NOT include any text or formatting before or after the JSON object.
+
+            EXAMPLE JSON OUTPUT:
+            {"sentiment":"Positive","explanation":"The text uses uplifting words and expresses excitement."}
+            ---
+
+            TEXT TO ANALYZE:
+            "${textToAnalyze}"
+        `;
+
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const result = await model.generateContent(prompt);
+        const responseText = result.response.text();
+
+        // Safely parse the JSON response from the AI
+        const parsedResponse = JSON.parse(responseText);
+
+        return res.status(200).json({
+            success: true,
+            result: parsedResponse
+        });
+
+
+    } catch (error) {
+        console.error("Error in Gemini API for analyzing sentiment:", error);
+        res.status(500).json({ error: 'Failed to analyze sentiment.' });
+    }
 }

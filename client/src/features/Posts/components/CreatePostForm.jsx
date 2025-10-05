@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { createPost, generateCaption, generateHashtags, } from '../api/post';
+import { analyzeSentiment, createPost, generateCaption, generateHashtags, } from '../api/post';
 import { toast } from 'react-toastify';
-import { Loader2, SpaceIcon, Sparkle, Sparkles } from 'lucide-react';
+import { Loader2, MessageSquareQuote, SpaceIcon, Sparkle, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 
@@ -14,6 +14,13 @@ const CreatePostForm = () => {
     const [temp1, setTemp1] = useState(false)
     const [temp2, setTemp2] = useState(false)
 
+    const [isLoading, setIsLoading] = useState({
+        submit: false,
+        caption: false,
+        hashtags: false,
+        sentiment: false, //  <-- Add this new loading state
+    });
+
     const [formData, setFormData] = useState({
         title: '',
         content: '',
@@ -24,6 +31,8 @@ const CreatePostForm = () => {
         aiCaption: ''
 
     });
+
+    const [sentimentResult, setSentimentResult] = useState(null);
 
 
     const changeHandler = (e) => {
@@ -97,6 +106,38 @@ const CreatePostForm = () => {
         }
 
     }
+
+    const analyzeToneHandler = async () => {
+        // --- THIS IS THE KEY LOGIC ---
+        // 1. Check if formData.aiCaption has text. If so, use it.
+        // 2. Otherwise, use formData.content.
+        const textToAnalyze = formData.aiCaption || formData.content;
+        // -----------------------------
+
+        if (!textToAnalyze) {
+            toast.error("Please provide content or caption to analyze.");
+            return;
+        }
+
+        setIsLoading(prev => ({ ...prev, sentiment: true }));
+        setSentimentResult(null);
+        try {
+            // Now, you always send the 'textToAnalyze' variable to the backend.
+            const res = await analyzeSentiment({ textToAnalyze });
+            setSentimentResult(res.data);
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to analyze tone.");
+        } finally {
+            setIsLoading(prev => ({ ...prev, sentiment: false }));
+        }
+    };
+
+    const sentimentStyles = {
+        Positive: 'bg-green-500/20 text-green-400 border-green-500/30',
+        Negative: 'bg-red-500/20 text-red-400 border-red-500/30',
+        Neutral: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
+        Mixed: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+    };
 
     const platformChangeHandler = (e) => {
         const { value, checked } = e.target;
@@ -300,16 +341,76 @@ const CreatePostForm = () => {
                         }
                     </div>
                 </div>
-                <div>
-                    <button type='submit' className={`mt-6  ${(temp1 || temp2) ? "bg-blue-500" : "bg-blue-700"}  text-white px-4 py-2 rounded-lg hover:bg-blue-700 w-full flex justify-center items-center hover:cursor-pointer`} disabled={temp1 || temp2}>
-                        {
-                            temp ?
-                                <>
-                                    <Loader2 className='animate-spin' /><span className='ml-3'>Please Wait</span>
-                                </> : `Submit`
 
-                        }
+                <div className="flex flex-col gap-3 pt-3">
+                    {/* Label */}
+
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={analyzeToneHandler}
+                        disabled={isLoading.sentiment || temp || temp1 || temp2}
+                        className="flex mt-2 items-center gap-2 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/70 hover:cursor-pointer text-blue-400 hover:from-blue-500/20 hover:to-cyan-500/20 hover:text-blue-300 transition-all rounded-lg shadow-sm"
+                    >
+                        {isLoading.sentiment ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <MessageSquareQuote className="h-4 w-4" />
+                        )}
+                        <span className="text-sm font-medium">
+                            {isLoading.sentiment ? "Analyzing..." : "Analyze Tone"}
+                        </span>
+                    </Button>
+
+                    {/* Tone Result + Button */}
+                    <div className="flex items-start justify-between gap-4">
+                        {/* Tone Result */}
+                        {sentimentResult && !isLoading.sentiment ? (
+                            <div className="flex justify-center items-center flex-col  gap-2 flex-1 p-3 rounded-lg border border-slate-700 bg-slate-800/40 shadow-sm">
+                                <span
+                                    className={`inline-block text-sm font-semibold capitalize px-3 py-1 rounded-full border shadow-sm ${sentimentStyles[sentimentResult?.result?.sentiment]}`}
+                                >
+                                    {sentimentResult?.result?.sentiment} Tone
+                                </span>
+                                <p className="text-sm text-gray-200 italic leading-relaxed">
+                                    {sentimentResult?.result?.explanation}
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="flex-1 text-xs text-gray-300 italic border border-dashed border-slate-200 rounded-lg p-3 text-center">
+                                No analysis yet.
+                            </div>
+                        )}
+
+                        {/* Analyze Button */}
+
+                    </div>
+                </div>
+
+
+
+
+                <div>
+                    <button
+                        type="submit"
+                        className={`mt-6 w-full flex justify-center items-center px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 
+    ${(temp1 || temp2 || isLoading.sentiment)
+                                ? "opacity-50 cursor-not-allowed bg-slate-700 text-slate-400"
+                                : "bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"} 
+  `}
+                        disabled={temp1 || temp2 || isLoading.sentiment}
+                    >
+                        {temp ? (
+                            <>
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <span className="ml-2">Please Wait...</span>
+                            </>
+                        ) : (
+                            "Submit"
+                        )}
                     </button>
+
                 </div>
             </form>
         </div>

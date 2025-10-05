@@ -29,3 +29,10 @@ export const generateHashtags = (data) => API.post(`/generate-hashtags`,data,{
         'Content-Type': 'application/json',
     },
 });
+
+export const analyzeSentiment = (data) => API.post(`/analyze-sentiment`,data,{
+    
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
