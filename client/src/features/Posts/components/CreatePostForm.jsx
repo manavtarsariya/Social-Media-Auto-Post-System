@@ -159,7 +159,7 @@ const CreatePostForm = () => {
 
     return (
         <div className=' border-1 border-blue-500 height-96 w-2/4 mx-auto rounded-2xl shadow-blue-400 p-7 
-        bg-gradient-to-bl from-pink-500/60 to-orange-400/90 shadow-lg '>
+        bg-gradient-to-bl from-pink-500/55 to-orange-400/70 shadow-lg '>
 
             <form action="" onSubmit={submitHandler} className='mt-4'>
 

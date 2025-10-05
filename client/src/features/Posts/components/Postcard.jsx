@@ -15,10 +15,10 @@ import {
 
 
 const statusColors = {
-    Scheduled: 'bg-blue-500/20 text-blue-400 border-blue-500/40',
-    Published: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40',
-    Draft: 'bg-slate-500/20 text-slate-400 border-slate-500/40',
-    Failed: 'bg-red-500/20 text-red-400 border-red-500/40',
+    scheduled: 'bg-blue-500/20 text-blue-400 border-blue-500/40',
+    posted: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40',
+    pending: 'bg-slate-500/20 text-slate-400 border-slate-500/40',
+    failed: 'bg-red-500/20 text-red-400 border-red-500/40',
 };
 
 
@@ -32,13 +32,16 @@ const Postcard = ({ post, DeleteHandler }) => {
                         <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-semibold text-sm shadow-lg shadow-blue-500/30">
                             {post?.username?.split(' ').map(n => n[0]).join('').toUpperCase()}
                         </div>
+
                         <div>
                             <h3 className="text-slate-100 font-semibold text-sm leading-tight">{post?.username}</h3>
                             <p className="text-slate-500 text-xs mt-0.5">ID: {post?.userId}</p>
                         </div>
                     </div>
-                    <span className={`px-3 py-1.5 rounded-full text-xs text-white font-semibold border ${statusColors[post.status]} backdrop-blur-sm`}>
-                        {post?.status}
+                    <span
+                        className={`px-2.5 py-1.5 text-[14px] font-medium  rounded-lg border ${statusColors[post?.status]}`}
+                    >
+                        {post?.status?.charAt(0).toUpperCase() + post?.status?.slice(1)}
                     </span>
                 </div>
 
@@ -111,7 +114,24 @@ const Postcard = ({ post, DeleteHandler }) => {
                             <div className="flex items-center gap-2 text-slate-300">
                                 <Calendar className="w-4 h-4 text-blue-400 mt-1" />
                                 <span className="text-sm mt-1 font-medium">
-                                    {new Date(post?.scheduleTime).toLocaleString("en-IN", {
+                                    { post?.scheduleTime ? new Date(post?.scheduleTime).toLocaleString("en-IN", {
+                                        timeZone: "Asia/Kolkata",
+                                        year: "numeric",
+                                        month: "short",
+                                        day: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        hour12: true
+                                    }) + " IST" : 
+                                    "Not Scheduled"
+                                    } 
+                                </span>
+                            </div>
+
+                            <div className="flex items-center gap-2 text-slate-500 ">
+                                <Clock className="w-4 h-4 mt-1" />
+                                <span className="text-sm mt-1">
+                                    {new Date(post?.createdAt).toLocaleString("en-IN", {
                                         timeZone: "Asia/Kolkata",
                                         year: "numeric",
                                         month: "short",
@@ -121,21 +141,6 @@ const Postcard = ({ post, DeleteHandler }) => {
                                         hour12: true
                                     })} IST
                                 </span>
-                            </div>
-
-                            <div className="flex items-center gap-2 text-slate-500 ">
-                                <Clock className="w-4 h-4 mt-1" />
-                                <span className="text-sm mt-1">
-                                     {new Date(post?.createdAt).toLocaleString("en-IN", {
-                                        timeZone: "Asia/Kolkata",
-                                        year: "numeric",
-                                        month: "short",
-                                        day: "numeric",
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                        hour12: true
-                                    })} IST
-                                    </span>
                             </div>
                         </div>
 

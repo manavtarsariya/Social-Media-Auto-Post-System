@@ -30,8 +30,8 @@ export default function Navbar() {
               + Create
             </button>
             
-            <Button variant={"outline"}>LogIn</Button>
-            <Button variant={"outline"}>SignUp</Button>
+            <Button variant={"outline"} className={`text-black`}>LogIn</Button>
+            <Button variant={"outline"} className={`text-black`}>SignUp</Button>
           </div>
         </div>
       </div>
