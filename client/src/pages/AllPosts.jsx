@@ -10,14 +10,6 @@ const AllPosts = () => {
   const [allPosts, setAllPosts] = useState([]);
   const [filterPosts, setFilterPosts] = useState([]);
 
-  // const [scheduledPost, setscheduledPost] = useState(0)
-  // const [postedPost, setpostedPost] = useState(0)
-  // const [failedPost, setfailedPost] = useState(0)
-
-  // const count_posted_post = 0;
-  // const count_scheduled_post = 0;
-  // const count_failed_post = 0;
-
   useEffect(() => {
     async function fetchPosts() {
       try {

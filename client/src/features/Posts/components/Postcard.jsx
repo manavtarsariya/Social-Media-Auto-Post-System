@@ -35,7 +35,7 @@ const Postcard = ({ post, DeleteHandler }) => {
 
                         <div>
                             <h3 className="text-slate-100 font-semibold text-sm leading-tight">{post?.username}</h3>
-                            <p className="text-slate-500 text-xs mt-0.5">ID: {post?.userId}</p>
+                            <p className="text-slate-500 text-xs mt-0.5">ID: UserName</p>
                         </div>
                     </div>
                     <span
@@ -58,7 +58,6 @@ const Postcard = ({ post, DeleteHandler }) => {
                             alt="Description"
                             className='w-full h-full object-cover hover:scale-105 transition-transform duration-500' />
                     }
-                    {/* <div className="absolute inset-0  bg-gradient-to-t from-[#1a1d24] via-transparent to-transparent"></div> */}
                 </div>
 
                 <div className="p-5 space-y-4">

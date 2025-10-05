@@ -153,8 +153,6 @@ const CreatePostForm = () => {
             setTemp(false);
         }
 
-
-        // console.log("form submitted")
     }
 
     return (
@@ -164,7 +162,7 @@ const CreatePostForm = () => {
             <form action="" onSubmit={submitHandler} className='mt-4'>
 
                 <h1 className='font-bold text-5xl text-center p-2 mb-5 text-transparent bg-clip-text bg-gradient-to-bl from-yellow-200 to-red-500'>Create Post </h1>
-                <hr className='mb-14'/>
+                <hr className='mb-14' />
 
                 <div className='mt-4 flex justify-center items-center'>
                     <label htmlFor="title" className='block text-lg font-medium text-white w-1/4'>Title</label>
@@ -209,9 +207,9 @@ const CreatePostForm = () => {
                         onChange={changeHandler}
                         className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 ml-4' />
 
-                     <div className={`ml-4 ${temp1 && "pointer-events-none" } ${temp1 && "opacity-40" }`}
-                        onClick={hashtagsgenerator} 
-                        >
+                    <div className={`ml-4 ${temp1 && "pointer-events-none"} ${temp1 && "opacity-40"}`}
+                        onClick={hashtagsgenerator}
+                    >
 
                         {
                             temp2 ?
@@ -287,7 +285,7 @@ const CreatePostForm = () => {
                         onChange={changeHandler}
                         className='h-20 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 ml-4' />
 
-                    <div className={`ml-4 ${temp2 && "pointer-events-none" } ${temp2 && "opacity-40" }`}
+                    <div className={`ml-4 ${temp2 && "pointer-events-none"} ${temp2 && "opacity-40"}`}
                         onClick={captiongenerator}
                     >
 
@@ -303,7 +301,7 @@ const CreatePostForm = () => {
                     </div>
                 </div>
                 <div>
-                    <button type='submit' className={`mt-6  ${(temp1 || temp2) ? "bg-blue-500" : "bg-blue-700" }  text-white px-4 py-2 rounded-lg hover:bg-blue-700 w-full flex justify-center items-center hover:cursor-pointer`} disabled={temp1 || temp2}>
+                    <button type='submit' className={`mt-6  ${(temp1 || temp2) ? "bg-blue-500" : "bg-blue-700"}  text-white px-4 py-2 rounded-lg hover:bg-blue-700 w-full flex justify-center items-center hover:cursor-pointer`} disabled={temp1 || temp2}>
                         {
                             temp ?
                                 <>

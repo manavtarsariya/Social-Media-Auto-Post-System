@@ -19,7 +19,6 @@ async function callAPI(item) {
         })
 
         const answer = await res.json();
-        // console.log(answer)
 
 
         const response = await fetch("http://localhost:8000/api/log/create", {
@@ -60,10 +59,7 @@ const allscheduledPosts = async () => {
   const data = await response.json();
 
   const filtereddata = data.posts.filter(post => post.status === 'scheduled');
-  // console.log("Fetched posts:", filtereddata);
 
-
-  // const platformslength = filtereddata.length;
 
   filtereddata.forEach(async (item) => {
 
@@ -88,14 +84,11 @@ const allscheduledPosts = async () => {
 
     if (nowTrimmed.getTime() === scheduledTrimmed.getTime()) {
 
-      console.log('Scheduled time matched! Triggering API...');
       console.log(item)
 
-      
+      callAPI(item);
 
-        callAPI(item);
 
-      
     }
   });
 

@@ -1,5 +1,3 @@
-// import { Delete } from 'lucide-react';
-// import { toast } from 'sonner';
 import Postcard from './Postcard';
 import { deletePost } from '../api/post';
 import { toast} from 'react-toastify';

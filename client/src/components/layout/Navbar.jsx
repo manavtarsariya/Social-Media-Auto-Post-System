@@ -1,10 +1,9 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import logo from "../../assets/logo-2.png"
 
 export default function Navbar() {
 
-  // const navigate = useNavigate()
 
   return (
     <nav className=" bg-white fixed shadow-xl w-full top-0 left-0 z-50 inline rounded-b-xl">
@@ -12,7 +11,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <img src={logo} alt="" height={35} width={35} className="rounded-full mr-1 " />
+            <img src={logo} alt="" height={45} width={45} className="rounded-full mr-2 " />
             <h2 className="text-3xl font-bold text-blue-600">AutoPostAI</h2>
           </div>
 
@@ -21,19 +20,14 @@ export default function Navbar() {
             <Link to="/" className="hover:text-blue-600">Home</Link>
             <Link to="/createpost" className=" hover:text-blue-600">Create Post</Link>
             <Link to="/posts" className=" hover:text-blue-600">Posts</Link>
-            {/* <Link to="/settings" className="text-gray-700 hover:text-blue-600">Settings</Link> */}
           </div>
 
           {/* Profile */}
           <div className="flex items-center space-x-2">
-            {/* <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-            onClick={()=>navigate("/createpost")}
-            >
-              + Create
-            </button> */}
             
             <Button variant={"outline"} className={`text-black`}>LogIn</Button>
             <Button variant={"outline"} className={`text-black`}>SignUp</Button>
+
           </div>
         </div>
       </div>

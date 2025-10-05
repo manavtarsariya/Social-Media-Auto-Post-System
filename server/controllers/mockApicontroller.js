@@ -7,8 +7,6 @@ export const twitterHandler = async (req, res) => {
 
         if (content) {
 
-            // console.log('Twitter Post Data:', content);
-
             return res.status(200).json({
                 success: true,
                 message: 'Post successfully posted on Twitter'
@@ -37,7 +35,6 @@ export const linkedinHandler = async (req, res) => {
 
         if (content) {
 
-            // console.log('linkedIn Post Data:', content);
             return res.status(200).json({
                 success: true,
                 message: 'Post successfully posted on linkedin'
@@ -66,7 +63,7 @@ export const facebookHandler = async (req, res) => {
         const { content } = req.body;
 
         if (content) {
-            // console.log('Facebook Post Data:', content);
+
             return res.status(200).json({
                 success: true,
                 message: 'Post successfully posted on Facebook'

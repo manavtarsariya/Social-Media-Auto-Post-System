@@ -126,7 +126,6 @@ export const getallPosts = async (req, res) => {
 
 export const deletePost = async (req, res) => {
     const { postId } = req.params;
-    // console.log("Deleting post with ID:", postId);
 
     if (!mongoose.Types.ObjectId.isValid(postId)) {
         return res.status(400).json({
@@ -229,7 +228,7 @@ export const captiongenerator = async (req, res) => {
         const aiCaption = response.text();
 
         // 4. Send the result from Gemini back to your React frontend
-        // console.log(aiCaption)
+
         res.status(200).json({
             success: true,
             caption: aiCaption
@@ -274,7 +273,6 @@ export const hashtagsgenerator = async (req, res) => {
         const result = await model.generateContent(prompt);
         const responseText = result.response.text().trim();
 
-        // console.log("hashtags: ",responseText);
 
      
         res.status(200).json({ 

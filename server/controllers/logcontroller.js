@@ -18,8 +18,6 @@ const statuHandlerApiCall = async (postId, statusvalue) => {
         })
         const jsonresponse = await response.json()
 
-        // console.log("jsonresponse", jsonresponse)
-
     } catch (error) {
         console.log("statuHandler Api Call Error", error)
 
