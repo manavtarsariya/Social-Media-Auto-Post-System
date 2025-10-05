@@ -158,14 +158,15 @@ const CreatePostForm = () => {
     }
 
     return (
-        <div className='mt-20 border-1 height-96 w-2/4 mx-auto rounded-lg shadow-lg p-4'>
+        <div className=' border-0 height-96 w-2/4 mx-auto rounded-2xl shadow-blue-400 p-7 
+        bg-gradient-to-bl from-pink-500/60 to-orange-400/90 shadow-2xl '>
 
             <form action="" onSubmit={submitHandler} className='mt-4'>
 
-                <h1 className='text-black font-bold text-3xl'>Create Post </h1>
+                <h1 className='font-bold text-5xl text-center p-2 mb-10 text-transparent bg-clip-text bg-gradient-to-bl from-yellow-200 to-red-500'>Create Post </h1>
 
                 <div className='mt-4 flex justify-center items-center'>
-                    <label htmlFor="title" className='block text-lg font-medium text-gray-700 w-1/4'>Title</label>
+                    <label htmlFor="title" className='block text-lg font-medium text-white w-1/4'>Title</label>
                     <input
                         type="text"
                         id='title'
@@ -177,7 +178,7 @@ const CreatePostForm = () => {
                 </div>
 
                 <div className='mt-4 flex '>
-                    <label htmlFor="content" className='block text-lg font-medium text-gray-700 w-1/4'>Content</label>
+                    <label htmlFor="content" className='block text-lg font-medium text-white w-1/4'>Content</label>
                     <textarea
                         id='content'
                         rows="4"
@@ -188,7 +189,7 @@ const CreatePostForm = () => {
                 </div>
 
                 <div className='mt-4 flex justify-center items-center'>
-                    <label className='block text-lg font-medium text-gray-700 w-1/4'>Image</label>
+                    <label className='block text-lg font-medium text-white w-1/4'>Image</label>
                     <input
                         type='file'
                         accept='image/*'
@@ -199,13 +200,13 @@ const CreatePostForm = () => {
                 </div>
 
                 <div className='mt-4 flex justify-center items-center'>
-                    <label htmlFor="hashtages" className='block text-lg font-medium text-gray-700 w-1/4 '>Hashtags</label>
+                    <label htmlFor="hashtages" className='block text-lg font-medium text-white w-1/4 '>Hashtags</label>
                     <input
                         id='hashtages'
                         name='hashtags'
                         value={formData.hashtags}
                         onChange={changeHandler}
-                        className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500' />
+                        className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 ml-4' />
 
                      <div className={`ml-4 ${temp1 && "pointer-events-none" } ${temp1 && "opacity-40" }`}
                         onClick={hashtagsgenerator} 
@@ -216,7 +217,7 @@ const CreatePostForm = () => {
                                 <div className='p-3'>
                                     <Loader2 className='animate-spin' />
                                 </div> :
-                                <div className='p-2 border-1 rounded-full hover:cursor-pointer hover:bg-blue-200' >
+                                <div className='p-2 border-1 rounded-full hover:cursor-pointer hover:bg-blue-300' >
                                     <Sparkles color='' fill='blue'></Sparkles>
                                 </div>
 
@@ -225,7 +226,7 @@ const CreatePostForm = () => {
                 </div>
 
                 <div className='mt-4 flex justify-center items-center'>
-                    <label htmlFor="schedule" className='block text-lg font-medium text-gray-700 w-1/4'>Schedule Time</label>
+                    <label htmlFor="schedule" className='block text-lg font-medium text-white w-1/4'>Schedule Time</label>
                     <input
                         type="datetime-local"
                         id='schedule'
@@ -236,7 +237,7 @@ const CreatePostForm = () => {
                 </div>
 
                 <div className='mt-4 flex items-center'>
-                    <label htmlFor="platforms" className='block text-lg font-medium text-gray-700 w-1/4'>Platforms</label>
+                    <label htmlFor="platforms" className='block text-lg font-medium text-white w-1/4'>Platforms</label>
                     <div className='flex space-x-5'>
                         <div>
                             <input
@@ -247,7 +248,7 @@ const CreatePostForm = () => {
                                 onChange={platformChangeHandler}
                                 className='mr-2'
                             />
-                            <label htmlFor="twitter" className='text-gray-700'>Twitter</label>
+                            <label htmlFor="twitter" className='text-white'>Twitter</label>
                         </div>
                         <div>
                             <input
@@ -258,7 +259,7 @@ const CreatePostForm = () => {
                                 onChange={platformChangeHandler}
                                 className='mr-2 leading-tight'
                             />
-                            <label htmlFor="linkedin" className='text-gray-700'>LinkedIn</label>
+                            <label htmlFor="linkedin" className='text-white'>LinkedIn</label>
                         </div>
                         <div>
                             <input
@@ -269,7 +270,7 @@ const CreatePostForm = () => {
                                 onChange={platformChangeHandler}
                                 className='mr-2 leading-tight'
                             />
-                            <label htmlFor="facebook" className='text-gray-700'>Facebook</label>
+                            <label htmlFor="facebook" className='text-white'>Facebook</label>
                         </div>
                     </div>
 
@@ -277,13 +278,13 @@ const CreatePostForm = () => {
                 </div>
 
                 <div className='mt-4 flex justify-center items-center' >
-                    <label htmlFor="aiCaption" className='block text-lg font-medium text-gray-700 w-1/4'>caption</label>
+                    <label htmlFor="aiCaption" className='block text-lg font-medium text-white w-1/4'>caption</label>
                     <textarea
                         id='aiCaption'
                         name='aiCaption'
                         value={formData.aiCaption}
                         onChange={changeHandler}
-                        className='h-20 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500' />
+                        className='h-20 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 ml-4' />
 
                     <div className={`ml-4 ${temp2 && "pointer-events-none" } ${temp2 && "opacity-40" }`}
                         onClick={captiongenerator}
@@ -294,14 +295,14 @@ const CreatePostForm = () => {
                                 <div className='p-3'>
                                     <Loader2 className='animate-spin' />
                                 </div> :
-                                <div className='p-2 border-1 rounded-full hover:cursor-pointer hover:bg-blue-200'>
+                                <div className='p-2 border-1 rounded-full hover:cursor-pointer hover:bg-blue-300'>
                                     <Sparkles color='' fill='blue'></Sparkles>
                                 </div>
                         }
                     </div>
                 </div>
                 <div>
-                    <button type='submit' className={`mt-6  ${(temp1 || temp2) ? "bg-blue-400" : "bg-blue-600" }  text-white px-4 py-2 rounded-lg hover:bg-blue-700 w-full flex justify-center items-center hover:cursor-pointer`} disabled={temp1 || temp2}>
+                    <button type='submit' className={`mt-6  ${(temp1 || temp2) ? "bg-blue-500" : "bg-blue-700" }  text-white px-4 py-2 rounded-lg hover:bg-blue-700 w-full flex justify-center items-center hover:cursor-pointer`} disabled={temp1 || temp2}>
                         {
                             temp ?
                                 <>

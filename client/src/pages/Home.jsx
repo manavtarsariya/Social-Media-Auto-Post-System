@@ -10,6 +10,7 @@ import photo6 from "../assets/Lucid_Origin_A_cheerful_person_relaxing_on_a_sofa_
 import photo7 from "../assets/Lucid_Origin_A_modern_vibrant_illustration_showing_a_person_si_1.jpg";
 import photo8 from "../assets/Lucid_Origin_A_modern_vibrant_illustration_showing_a_person_si_2.jpg";
 import { useNavigate } from 'react-router';
+import Footer from '@/components/layout/Footer';
 
 // You can replace this with a high-quality image URL or an imported image.
 // The image generated earlier would be perfect here.
@@ -105,7 +106,7 @@ const HomePage = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {features.map((feature, index) => (
-                        <div key={index} className="bg-gray-800 p-8 rounded-lg border border-gray-700">
+                        <div key={index} className="bg-gray-800 p-8 rounded-lg border border-gray-700 mx-auto shadow-2xl shadow-blue-500/50 hover:shadow-blue-500/80 transform transition duration-300 ease-in-out hover:scale-103">
                             <div className="bg-gray-900 w-16 h-16 rounded-full flex items-center justify-center mb-4">
                                 {feature.icon}
                             </div>
@@ -157,16 +158,7 @@ const HomePage = () => {
       </section> */}
 
             {/* --- Footer --- */}
-            <footer className="border-t border-gray-800">
-                <div className="container mx-auto px-6 py-8 flex justify-between items-center">
-                    <p className="text-gray-500">&copy; 2025 AutoPoster AI. All rights reserved.</p>
-                    <div className="flex gap-4 text-gray-500">
-                        <a href="#" className="hover:text-white">Privacy</a>
-                        <a href="#" className="hover:text-white">Terms</a>
-                        <a href="#" className="hover:text-white">Contact</a>
-                    </div>
-                </div>
-            </footer>
+            <Footer/>
         </div>
     );
 };
