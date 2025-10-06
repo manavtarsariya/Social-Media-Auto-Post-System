@@ -4,129 +4,165 @@ import { toast } from 'react-toastify';
 import { Loader2, MessageSquareQuote, SpaceIcon, Sparkle, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
-// import { useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
-const CreatePostForm = () => {
+const CreateForm = () => {
 
     const navigate = useNavigate()
 
 
-    const [temp, setTemp] = useState(false)
-    const [temp1, setTemp1] = useState(false)
-    const [temp2, setTemp2] = useState(false)
-
-    const [isLoading, setIsLoading] = useState({
-        sentiment: false, 
-    });
-
-    const [formData, setFormData] = useState({
-        title: '',
-        content: '',
-        file: null,
-        hashtags: '',
-        scheduleTime: '',
-        platforms: [],
-        aiCaption: ''
-
-    });
-
+    const [temp, setTemp] = useState(false); // Main form submission loading
+    const [temp1, setTemp1] = useState(false); // Caption generation loading
+    const [temp2, setTemp2] = useState(false); // Hashtag generation loading
     const [sentimentResult, setSentimentResult] = useState(null);
 
-    //  const { register, handleSubmit, formState: { errors } } = useForm();
+    const [isLoading, setIsLoading] = useState({
+        sentiment: false,
+    });
+
+    const {
+        handleSubmit,
+        formState: { errors },
+        register,
+        setValue,
+        getValues,
+    } = useForm({
+        // Default values for the form fields
+        defaultValues: {
+            title: '',
+            content: '',
+            file: null,
+            hashtags: '',
+            scheduleTime: '',
+            platforms: [],
+            aiCaption: '',
+        },
+    });
 
 
-    const changeHandler = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    }
 
-    const fileChangeHandler = (e) => {
-        setFormData({
-            ...formData,
-            file: e.target?.files?.[0]
-        });
-    }
+    // const changeHandler = (e) => {
+    //     setFormData({
+    //         ...formData,
+    //         [e.target.name]: e.target.value
+    //     });
+    // }
+
+    // const fileChangeHandler = (e) => {
+    //     setFormData({
+    //         ...formData,
+    //         file: e.target?.files?.[0]
+    //     });
+    // }
 
     const captiongenerator = async () => {
 
+        const { title, content } = getValues();
+
+         if (!title || !content) {
+            toast.error("Please enter a title and content to generate hashtags.");
+            return;
+        }
+
+        if (!title.trim() && !content.trim()) {
+            toast.error("Please enter title or content first");
+            return;
+        }
         try {
-
-            const data = {
-                title: formData.title,
-                content: formData.content
-            }
-
             setTemp1(true);
-
-            const res = await generateCaption(data)
-
-            console.log(res.data.caption)
-            setFormData({
-                ...formData,
-                aiCaption: res.data.caption
-            })
-
-        } catch (error) {
-            console.log(error);
-            toast.error(error.response?.data?.message)
-
+            const res = await generateCaption({ title, content });
+            // Update the form state using setValue
+            setValue("aiCaption", res.data.caption, { shouldValidate: true });
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to generate caption");
         } finally {
             setTemp1(false);
         }
-
     }
 
     const hashtagsgenerator = async () => {
 
+        const { title, content } = getValues();
+
+        if (!title || !content) {
+            toast.error("Please enter a title and content to generate hashtags.");
+            return;
+        }
+
+
+        if (!title.trim() && !content.trim()) {
+            toast.error("Please enter title or content first");
+            return;
+        }
         try {
-            const data = {
-                title: formData.title,
-                content: formData.content
-            }
-
             setTemp2(true);
-
-            const res = await generateHashtags(data)
-
-            console.log(res.data.caption)
-            setFormData({
-                ...formData,
-                hashtags: res.data.hashtags
-            })
-
-
-        } catch (error) {
-            console.log(error);
-            toast.error(error.response?.data?.message)
-
+            const res = await generateHashtags({ title, content });
+            setValue("hashtags", res.data.hashtags, { shouldValidate: true });
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to generate hashtags");
         } finally {
-            setTemp2(false)
+            setTemp2(false);
         }
 
     }
 
     const analyzeToneHandler = async () => {
 
-        const textToAnalyze = formData.aiCaption || formData.content;
-
+        const textToAnalyze = getValues("aiCaption") || getValues("content");
         if (!textToAnalyze) {
             toast.error("Please provide content or caption to analyze.");
             return;
         }
-
         setIsLoading(prev => ({ ...prev, sentiment: true }));
         setSentimentResult(null);
         try {
-
             const res = await analyzeSentiment({ textToAnalyze });
             setSentimentResult(res.data);
-
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to analyze tone.");
         } finally {
             setIsLoading(prev => ({ ...prev, sentiment: false }));
+        }
+    };
+
+    const submitHandler = async (data) => {
+
+        const now = new Date();
+        const selected = new Date(data.scheduleTime);
+
+        if (selected.getTime() < now.getTime()) {
+            toast.error("Schedule time must be at least +1 minute in the future.");
+            return;
+        }
+
+        if (data.scheduleTime && !data.platforms.length) {
+            toast.error("Please select atleast one platform for the scheduled Post.");
+            return;
+        }
+
+        try {
+            const formPayload = new FormData();
+            formPayload.append('title', data.title);
+            formPayload.append('content', data.content);
+            formPayload.append('hashtags', data.hashtags);
+            formPayload.append('scheduleTime', data.scheduleTime);
+            formPayload.append('platforms', JSON.stringify(data.platforms));
+            formPayload.append('aiCaption', data.aiCaption);
+            // react-hook-form returns a FileList for file inputs
+            if (data.file && data.file.length > 0) {
+                formPayload.append('file', data.file[0]);
+            }
+
+            setTemp(true);
+            const res = await createPost(formPayload);
+            if (res.data.success) {
+                toast.success(res.data.message);
+                navigate('/posts');
+            }
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Something went wrong");
+        } finally {
+            setTemp(false);
         }
     };
 
@@ -137,68 +173,81 @@ const CreatePostForm = () => {
         Mixed: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
     };
 
-    const platformChangeHandler = (e) => {
-        const { value, checked } = e.target;
+    // const platformChangeHandler = (e) => {
+    //     const { value, checked } = e.target;
 
-        let updatedPlatforms = [...formData.platforms];
+    //     let updatedPlatforms = [...formData.platforms];
 
-        if (checked) {
-            updatedPlatforms.push(value);
-        } else {
-            updatedPlatforms = updatedPlatforms.filter((platform) => platform !== value);
-        }
-        setFormData({
-            ...formData,
-            platforms: updatedPlatforms
-        });
-    }
-
-
-    const submitHandler = async (e) => {
-        e.preventDefault();
-
-        const data = new FormData();
-        data.append('title', formData.title);
-        data.append('content', formData.content);
-        data.append('hashtags', formData.hashtags);
-        data.append('scheduleTime', formData.scheduleTime);
-        data.append('platforms', JSON.stringify(formData.platforms));
-        data.append('aiCaption', formData.aiCaption);
-
-        if (formData.file) {
-            data.append('file', formData.file);
-        }
-
-        try {
-
-            setTemp(true);
-            const res = await createPost(data);
-            console.log(res.data);
+    //     if (checked) {
+    //         updatedPlatforms.push(value);
+    //     } else {
+    //         updatedPlatforms = updatedPlatforms.filter((platform) => platform !== value);
+    //     }
+    //     setFormData({
+    //         ...formData,
+    //         platforms: updatedPlatforms
+    //     });
+    // }
 
 
-            if (res.data.success) {
+    // const submitHandler = async (e) => {
+    //     e.preventDefault();
 
-                toast.success(res?.data?.message);
-                navigate('/posts');
-            }
+    //     const data = new FormData();
+    //     data.append('title', formData.title);
+    //     data.append('content', formData.content);
+    //     data.append('hashtags', formData.hashtags);
+    //     data.append('scheduleTime', formData.scheduleTime);
+    //     data.append('platforms', JSON.stringify(formData.platforms));
+    //     data.append('aiCaption', formData.aiCaption);
+
+    //     if (formData.file) {
+    //         data.append('file', formData.file);
+    //     }
+
+    //     try {
+
+    //         setTemp(true);
+    //         const res = await createPost(data);
+    //         console.log(res.data);
+
+
+    //         if (res.data.success) {
+
+    //             toast.success(res?.data?.message);
+    //             navigate('/posts');
+    //         }
 
 
 
-        } catch (error) {
-            console.log(error);
-            toast.error(error?.response?.data?.message || "Something went wrong");
+    //     } catch (error) {
+    //         console.log(error);
+    //         toast.error(error?.response?.data?.message || "Something went wrong");
 
-        } finally {
-            setTemp(false);
-        }
+    //     } finally {
+    //         setTemp(false);
+    //     }
 
-    }
+    // }
+
+    const formatLocalDateTime = (date) => {
+        const pad = (n) => n.toString().padStart(2, "0");
+
+        const year = date.getFullYear();
+        const month = pad(date.getMonth() + 1);
+        const day = pad(date.getDate());
+        const hours = pad(date.getHours());
+        const minutes = pad(date.getMinutes());
+
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    };
+
 
     return (
         <div className=' border-1 border-blue-500 height-96 w-2/4 mx-auto rounded-2xl shadow-blue-400 p-7 
         bg-gradient-to-bl from-pink-500/55 to-orange-400/70 shadow-lg '>
 
-            <form action="" onSubmit={submitHandler} className='mt-4'>
+            <form action="" onSubmit={handleSubmit(submitHandler)} className='mt-4'>
 
                 <h1 className='font-bold text-5xl text-center p-2 mb-5 text-transparent bg-clip-text bg-gradient-to-bl from-yellow-200 to-red-500'>Create Post </h1>
                 <hr className='mb-14' />
@@ -208,34 +257,36 @@ const CreatePostForm = () => {
                     <input
                         type="text"
                         id='title'
-                        name='title'
-                        value={formData.title}
-                        onChange={changeHandler}
-                        // {...register("title", { required: "Title is required", maxLength: { value: 100, message: "Max 100 characters" } })}
-                        required
+                        {...register("title", {
+                            required: "Title is required",
+                            maxLength: { value: 100, message: "Max 100 characters" },
+                            validate: (value) =>
+                                value.trim() !== '' || "The title cannot be only spaces"
+                        })}
                         className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500' />
                 </div>
-                {/* {errors.title && <p className="text-red-400 text-sm">{errors.title.message}</p>} */}
+                {errors.title && <p className="text-red-100 font-medium text-sm text-left ml-28">* {errors.title.message}</p>}
 
                 <div className='mt-4 flex '>
                     <label htmlFor="content" className='block text-lg font-medium text-white w-1/4'>Content</label>
                     <textarea
                         id='content'
                         rows="4"
-                        name='content'
-                        value={formData.content}
-                        onChange={changeHandler}
+                        {...register("content", {
+                            required: "Content is required",
+                            validate: (value) =>
+                                value.trim() !== '' || "The content cannot be only spaces"
+                        })}
                         className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500'></textarea>
                 </div>
+                {errors.content && <p className="text-red-100 font-medium text-sm text-left ml-28">* {errors.content.message}</p>}
 
                 <div className='mt-4 flex justify-center items-center'>
                     <label className='block text-lg font-medium text-white w-1/4'>Image</label>
                     <input
                         type='file'
                         accept='image/*'
-                        // id='image'
-                        name='file'
-                        onChange={fileChangeHandler}
+                        {...register("file")}
                         className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500' />
                 </div>
 
@@ -243,9 +294,8 @@ const CreatePostForm = () => {
                     <label htmlFor="hashtages" className='block text-lg font-medium text-white w-1/4 '>Hashtags</label>
                     <input
                         id='hashtages'
-                        name='hashtags'
-                        value={formData.hashtags}
-                        onChange={changeHandler}
+                        // name='hashtags'
+                        {...register("hashtags")}
                         className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 ml-4' />
 
                     <div className={`ml-4 ${temp1 && "pointer-events-none"} ${temp1 && "opacity-40"}`}
@@ -265,14 +315,22 @@ const CreatePostForm = () => {
                     </div>
                 </div>
 
+
+
                 <div className='mt-4 flex justify-center items-center'>
                     <label htmlFor="schedule" className='block text-lg font-medium text-white w-1/4'>Schedule Time</label>
                     <input
                         type="datetime-local"
                         id='schedule'
-                        name='scheduleTime'
-                        value={formData.scheduleTime}
-                        onChange={changeHandler}
+
+                        min={(() => {
+                            const now = new Date();
+                            now.setMinutes(now.getMinutes() + 1); // only future minutes
+                            return formatLocalDateTime(now); // ✅ IST safe
+                        })()}
+
+
+                        {...register("scheduleTime")}
                         className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500' />
                 </div>
 
@@ -283,9 +341,9 @@ const CreatePostForm = () => {
                             <input
                                 type="checkbox"
                                 id='twitter'
-                                name='platforms'
+                                // name='platforms'
                                 value='twitter'
-                                onChange={platformChangeHandler}
+                                {...register("platforms")}
                                 className='mr-2'
                             />
                             <label htmlFor="twitter" className='text-white'>Twitter</label>
@@ -294,9 +352,9 @@ const CreatePostForm = () => {
                             <input
                                 type="checkbox"
                                 id='linkedin'
-                                name='platforms'
+                                // name='platforms'
                                 value='linkedin'
-                                onChange={platformChangeHandler}
+                                {...register("platforms")}
                                 className='mr-2 leading-tight'
                             />
                             <label htmlFor="linkedin" className='text-white'>LinkedIn</label>
@@ -305,9 +363,9 @@ const CreatePostForm = () => {
                             <input
                                 type="checkbox"
                                 id='facebook'
-                                name='platforms'
+                                // name='platforms'
                                 value='facebook'
-                                onChange={platformChangeHandler}
+                                {...register("platforms")}
                                 className='mr-2 leading-tight'
                             />
                             <label htmlFor="facebook" className='text-white'>Facebook</label>
@@ -321,9 +379,8 @@ const CreatePostForm = () => {
                     <label htmlFor="aiCaption" className='block text-lg font-medium text-white w-1/4'>caption</label>
                     <textarea
                         id='aiCaption'
-                        name='aiCaption'
-                        value={formData.aiCaption}
-                        onChange={changeHandler}
+                        // name='aiCaption'
+                        {...register("aiCaption")}
                         className='h-20 mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 ml-4' />
 
                     <div className={`ml-4 ${temp2 && "pointer-events-none"} ${temp2 && "opacity-40"}`}
@@ -417,4 +474,4 @@ const CreatePostForm = () => {
     )
 }
 
-export default CreatePostForm
+export default CreateForm
