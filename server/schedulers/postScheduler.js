@@ -58,6 +58,10 @@ const allscheduledPosts = async () => {
   const response = await fetch('http://localhost:8000/api/posts/getallPosts');
   const data = await response.json();
 
+  if(!data.posts){
+    return ;
+  }
+
   const filtereddata = data.posts.filter(post => post.status === 'scheduled');
 
 
