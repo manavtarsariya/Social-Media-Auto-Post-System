@@ -40,7 +40,6 @@ export const logpostdetails = async (req, res) => {
 
         })
 
-        // await res.save();
 
         statuHandlerApiCall(postId, status)
 

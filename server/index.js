@@ -29,8 +29,6 @@ app.use('/api/log',logApiRoutes)
 
 app.listen(PORT, () => {
     connectDB();
-    // sheduler.start()
-    // sheduler.stop()
     console.log(`Server is running on port ${PORT}`);
 });
 

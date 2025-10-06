@@ -34,7 +34,7 @@ const PostSchema = new mongoose.Schema({
     }], 
     aiCaption: {
         type: String
-    }, // optional AI generated caption/hashtags
+    }, 
 
 },{timestamps: true});
 

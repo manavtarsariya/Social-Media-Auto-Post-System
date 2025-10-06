@@ -104,5 +104,4 @@ const sheduler = cron.schedule('* * * * *', () => {
 });
 
 export default sheduler;
-// console.log('Post scheduler started');
 

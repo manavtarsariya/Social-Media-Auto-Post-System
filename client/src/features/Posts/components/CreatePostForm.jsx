@@ -15,10 +15,7 @@ const CreatePostForm = () => {
     const [temp2, setTemp2] = useState(false)
 
     const [isLoading, setIsLoading] = useState({
-        submit: false,
-        caption: false,
-        hashtags: false,
-        sentiment: false, //  <-- Add this new loading state
+        sentiment: false, 
     });
 
     const [formData, setFormData] = useState({
@@ -108,11 +105,8 @@ const CreatePostForm = () => {
     }
 
     const analyzeToneHandler = async () => {
-        // --- THIS IS THE KEY LOGIC ---
-        // 1. Check if formData.aiCaption has text. If so, use it.
-        // 2. Otherwise, use formData.content.
+
         const textToAnalyze = formData.aiCaption || formData.content;
-        // -----------------------------
 
         if (!textToAnalyze) {
             toast.error("Please provide content or caption to analyze.");
@@ -122,9 +116,10 @@ const CreatePostForm = () => {
         setIsLoading(prev => ({ ...prev, sentiment: true }));
         setSentimentResult(null);
         try {
-            // Now, you always send the 'textToAnalyze' variable to the backend.
+
             const res = await analyzeSentiment({ textToAnalyze });
             setSentimentResult(res.data);
+
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to analyze tone.");
         } finally {
