@@ -60,7 +60,7 @@ const CreateForm = () => {
         const { title, content } = getValues();
 
          if (!title || !content) {
-            toast.error("Please enter a title and content to generate hashtags.");
+            toast.error("Please enter a title and content to generate captions.");
             return;
         }
 
@@ -137,6 +137,11 @@ const CreateForm = () => {
 
         if (data.scheduleTime && !data.platforms.length) {
             toast.error("Please select atleast one platform for the scheduled Post.");
+            return;
+        }
+
+        if (data.platforms.length>=1 && !data.scheduleTime ) {
+            toast.error("Please select Scheduled Time for selected platforms.");
             return;
         }
 
