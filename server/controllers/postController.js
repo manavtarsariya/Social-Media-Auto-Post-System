@@ -3,14 +3,49 @@ import Post from "../models/Post.js";
 import getDataUri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
 import { GoogleGenerativeAI } from "@google/generative-ai"
+import Joi from "joi"
+
+const createPostSchema = Joi.object({
+    userId: Joi.string().optional(),
+    title: Joi.string().required().messages({
+        'string.empty': 'Title is required',
+    }),
+    content: Joi.string().required().messages({
+        'string.empty': 'Content is required',
+    }),
+    hashtags: Joi.string().allow('').optional(),
+    scheduleTime: Joi.string().allow(""),
+    platforms: Joi.alternatives().try(
+        Joi.array().items(Joi.string().valid('twitter', 'linkedin', 'facebook')),
+        Joi.string().allow('')
+    ).optional(),
+    aiCaption: Joi.string().allow('').optional()
+});
 
 export const createPost = async (req, res) => {
 
+    const { error } = createPostSchema.validate(req.body);
+    if (error) {
+        return res.status(400).json({
+            message: error.details[0].message,
+            success: false
+        });
+    }
+
+
+
     const { userId, title, content, hashtags, scheduleTime, platforms, aiCaption } = req.body;
 
-    if (!title) {
+   if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({
+        message: "Invalid User ID",
+        success: false
+    });
+}
+
+    if (!title.trim()) {
         return res.status(400).json({
-            message: "Title is required",
+            message: "Title cannot be empty or consist only of spaces",
             success: false
         });
     }
@@ -127,7 +162,7 @@ export const getallPosts = async (req, res) => {
 export const deletePost = async (req, res) => {
     const { postId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(postId)) {
+    if (postId && !mongoose.Types.ObjectId.isValid(postId)) {
         return res.status(400).json({
             message: "Invalid post ID",
             success: false
@@ -158,100 +193,161 @@ export const deletePost = async (req, res) => {
 
 
 export const statusHandler = async (req, res) => {
-    try {
+    const { postId } = req.params;
+    const { status } = req.body;
 
-        const { postId } = req.params;
-
-        if (!mongoose.Types.ObjectId.isValid(postId)) {
-            return res.status(400).json({
-                message: "Invalid post ID",
-                success: false
-            });
-        }
-
-        const { status } = req.body
-
-
-        const statusvalue = status ? "posted" : "failed";
-
-        const response = await Post.findByIdAndUpdate(postId, {
-            status: statusvalue
-        }, { new: true })
-
-        return res.status(200).json({
-            success: true,
-            message: "status updated"
+    // --- Joi schema for validation ---
+    const schema = Joi.object({
+        postId: Joi.string().required().custom((value, helpers) => {
+            if (!mongoose.Types.ObjectId.isValid(value)) {
+                return helpers.message("Invalid Post ID");
+            }
+            return value;
+        }),
+        status: Joi.boolean().required().messages({
+            "any.required": "Status is required",
+            "boolean.base": "Status must be a boolean value"
         })
+    });
 
-    } catch (error) {
-        console.error("Error in statusHandler handler:", error);
-        return res.status(500).json({ message: "Internal server error" });
-
+    // --- Validate params + body ---
+    const { error } = schema.validate({ postId, status });
+    if (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.details[0].message
+        });
     }
+
+    // --- Update logic ---
+    const statusValue = status ? "posted" : "failed";
+
+    const response = await Post.findByIdAndUpdate(
+        postId,
+        { status: statusValue },
+        { new: true }
+    );
+
+    if (!response) {
+        return res.status(404).json({
+            success: false,
+            message: "Post not found"
+        });
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: "Post status updated successfully",
+        post: response
+    });
 }
 
 export const captiongenerator = async (req, res) => {
     try {
+        const { title, content } = req.body;
 
-        const { title, content } = req.body
+        // --- Joi validation schema ---
+        const schema = Joi.object({
+            title: Joi.string()
+                .trim()
+                .min(1)
+                .required()
+                .messages({
+                    "string.empty": "Title is required and cannot be empty",
+                    "any.required": "Title is required",
+                }),
+            content: Joi.string()
+                .trim()
+                .min(1)
+                .required()
+                .messages({
+                    "string.empty": "Content is required and cannot be empty",
+                    "any.required": "Content is required",
+                }),
+        });
 
-        if (!content || !title) {
+        // --- Validate request body ---
+        const { error } = schema.validate({ title, content });
+        if (error) {
             return res.status(400).json({
                 success: false,
-                message: 'Title and content are required.'
+                message: error.details[0].message,
             });
         }
+
+        // --- AI caption generation ---
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const prompt = `
-
         Act as a professional social media copywriter. Your single task is to write one compelling caption based on the provided Title and Content.
 
         ---
         INSTRUCTIONS:
-        - The tone must be: ${"Engaging and Conversational"}
-        - The length should be approximately: ${"2 to 3 short sentences (approximately 150 characters)"}
+        - The tone must be: Engaging and Conversational
+        - The length should be approximately: 2 to 3 short sentences (around 150 characters)
         - Use the Title as the main subject and the Content for details.
         - CRITICAL: Do NOT include hashtags.
         - CRITICAL: Do NOT include emojis.
         - CRITICAL: Do NOT include any text other than the caption itself.
         ---
-
         PROVIDED DETAILS:
         - Title: "${title}"
-        - Content: "${content}"`;
-
+        - Content: "${content}"
+        `;
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const aiCaption = response.text();
 
-        // 4. Send the result from Gemini back to your React frontend
-
         return res.status(200).json({
             success: true,
-            caption: aiCaption
+            caption: aiCaption,
         });
-
     } catch (error) {
-        console.error("Error in Gemini API for caption generation", error);
-        res.status(500).json({ error: 'Failed to generate AI caption.' });
+        console.error("Error in Gemini API for caption generation:", error);
+        return res.status(500).json({
+            success: false,
+            error: "Failed to generate AI caption.",
+        });
     }
 }
 
 
 export const hashtagsgenerator = async (req, res) => {
-    try {
+     try {
         const { title, content } = req.body;
 
-        if (!title || !content) {
+        // --- Joi Validation Schema ---
+        const schema = Joi.object({
+            title: Joi.string()
+                .trim()
+                .min(1)
+                .required()
+                .messages({
+                    "string.empty": "Title is required and cannot be empty",
+                    "any.required": "Title is required",
+                }),
+            content: Joi.string()
+                .trim()
+                .min(1)
+                .required()
+                .messages({
+                    "string.empty": "Content is required and cannot be empty",
+                    "any.required": "Content is required",
+                }),
+        });
+
+        // --- Validate the input ---
+        const { error } = schema.validate({ title, content });
+        if (error) {
             return res.status(400).json({
                 success: false,
-                message: 'Title and content are required.'
+                message: error.details[0].message,
             });
         }
 
+        // --- Gemini AI logic ---
         const prompt = `
       Act as a social media expert specializing in content reach. Your only task is to generate the most relevant hashtags based on the provided Title and Content.
         ---
@@ -274,16 +370,17 @@ export const hashtagsgenerator = async (req, res) => {
         const result = await model.generateContent(prompt);
         const responseText = result.response.text().trim();
 
-
-
         return res.status(200).json({
             success: true,
-            hashtags: responseText
+            hashtags: responseText,
         });
 
     } catch (error) {
         console.error("Error in Gemini API for hashtags generation:", error);
-        res.status(500).json({ error: 'Failed to generate hashtags.' });
+        return res.status(500).json({
+            success: false,
+            error: "Failed to generate hashtags.",
+        });
     }
 
 }
@@ -291,15 +388,32 @@ export const hashtagsgenerator = async (req, res) => {
 
 export const sentimentanalyzer = async (req, res) => {
 
-    try {
-
+     try {
         const { textToAnalyze } = req.body;
 
-        if (!textToAnalyze) {
-            return res.status(400).json({ error: 'Text to analyze is required.' });
+        // --- Joi Validation Schema ---
+        const schema = Joi.object({
+            textToAnalyze: Joi.string()
+                .trim()
+                .min(1)
+                .required()
+                .messages({
+                    "string.base": "Text to analyze must be a string.",
+                    "string.empty": "Text to analyze is required and cannot be empty.",
+                    "any.required": "Text to analyze is required.",
+                }),
+        });
+
+        // --- Validate input ---
+        const { error } = schema.validate({ textToAnalyze });
+        if (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.details[0].message,
+            });
         }
 
-        // The prompt we designed above
+        // --- Gemini AI Prompt ---
         const prompt = `
             Act as an expert sentiment analysis AI. Your single task is to analyze the tone of the provided text.
 
@@ -313,27 +427,28 @@ export const sentimentanalyzer = async (req, res) => {
             EXAMPLE JSON OUTPUT:
             {"sentiment":"Positive","explanation":"The text uses uplifting words and expresses excitement."}
             ---
-
             TEXT TO ANALYZE:
             "${textToAnalyze}"
         `;
 
+        // --- Generate Response ---
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         const result = await model.generateContent(prompt);
         const responseText = result.response.text();
 
-        // Safely parse the JSON response from the AI
         const parsedResponse = JSON.parse(responseText);
 
         return res.status(200).json({
             success: true,
-            result: parsedResponse
+            result: parsedResponse,
         });
-
 
     } catch (error) {
         console.error("Error in Gemini API for analyzing sentiment:", error);
-        res.status(500).json({ error: 'Failed to analyze sentiment.' });
+        return res.status(500).json({
+            success: false,
+            error: "Failed to analyze sentiment.",
+        });
     }
 }

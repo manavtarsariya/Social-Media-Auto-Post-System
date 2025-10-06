@@ -1,18 +1,49 @@
 
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
+import Joi from "joi";
+
+// Register validation
+const registerValidationSchema = Joi.object({
+    name: Joi.string()
+        .trim()
+        .min(2)
+        .max(50)
+        .required()
+        .messages({
+            "string.empty": "Name is required",
+            "string.min": "Name must be at least 2 characters",
+            "string.max": "Name must be less than 50 characters",
+        }),
+    email: Joi.string()
+        .email()
+        .required()
+        .messages({
+            "string.empty": "Email is required",
+            "string.email": "Email must be a valid email address",
+        }),
+    password: Joi.string()
+        .min(6)
+        .required()
+        .messages({
+            "string.empty": "Password is required",
+            "string.min": "Password must be at least 6 characters",
+        }),
+});
 
 export const registerUser = async (req, res) => {
 
     try {
-        const { name, email, password } = req.body;
 
-        if (!name || !email || !password) {
+        const { error, value } = registerValidationSchema.validate(req.body);
+        if (error) {
             return res.status(400).json({
-                message: "All fields are required",
-                success: false
+                success: false,
+                message: error.details[0].message,
             });
         }
+
+        const { name, email, password } = value;
 
         const existingUser = await User.findOne({ email });
 
@@ -27,7 +58,7 @@ export const registerUser = async (req, res) => {
         const newUser = new User({
             name,
             email,
-            password : hashedPassword
+            password: hashedPassword
         });
         await newUser.save();
 
@@ -49,26 +80,41 @@ export const registerUser = async (req, res) => {
 }
 
 
+const loginValidationSchema = Joi.object({
+    email: Joi.string()
+        .email()
+        .required()
+        .messages({
+            "string.empty": "Email is required",
+            "string.email": "Email must be a valid email address",
+        }),
+    password: Joi.string()
+        .required()
+        .messages({
+            "string.empty": "Password is required",
+        }),
+});
+
+
 export const loginUser = async (req, res) => {
 
     try {
-        const { email, password } = req.body;
-
-        
-        if (!email || !password) {
-            return res.status(400).json({   
-                message: "All fields are required",
-                success: false
+        const { error, value } = loginValidationSchema.validate(req.body);
+        if (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.details[0].message,
             });
-        }   
+        }
 
+        const { email, password } = value;
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({
                 message: "Invalid email or password",
                 success: false
             });
-        }   
+        }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
