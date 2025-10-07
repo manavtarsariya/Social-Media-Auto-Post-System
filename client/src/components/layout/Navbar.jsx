@@ -1,8 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import logo from "../../assets/logo-2.png"
 
 export default function Navbar() {
+
+  const navigate = useNavigate()
 
 
   return (
@@ -25,8 +27,12 @@ export default function Navbar() {
           {/* Profile */}
           <div className="flex items-center space-x-2">
             
-            <Button variant={"outline"} className={`text-black cursor-not-allowed`}>LogIn</Button>
-            <Button variant={"outline"} className={`text-black cursor-not-allowed`}>SignUp</Button>
+            <Button variant={"outline"} className={`text-black`}
+            onClick={()=>navigate("/login")}
+            >LogIn</Button>
+            <Button variant={"outline"} className={`text-black `}
+            onClick={()=>(navigate("/signup"))}
+            >SignUp</Button>
 
           </div>
         </div>

@@ -6,6 +6,8 @@ import Navbar from "./components/layout/Navbar";
 import Home from "./pages/Home";
 import Createpostpage from "./pages/Createpostpage";
 import AllPosts from "./pages/AllPosts";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -22,6 +24,14 @@ function App() {
   {
     path: "/posts",
     element: <AllPosts/>,
+  },
+  {
+    path: "/login",
+    element: <Login/>,
+  },
+  {
+    path: "/signup",
+    element: <SignUp/>,
   }
 ]);
 
