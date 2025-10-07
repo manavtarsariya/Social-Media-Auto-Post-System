@@ -1,17 +1,18 @@
 import express from 'express';
 import { captiongenerator, createPost, deletePost, getallPosts, hashtagsgenerator, sentimentanalyzer, statusHandler } from '../controllers/postController.js';
 import { singleUpload } from '../middleware/multer.js';
+import isAuthenticated from '../middleware/isAuthenticated.js';
 
 const router = express.Router();
 
 
-router.post('/createpost',singleUpload,createPost)
-router.get('/getallposts',getallPosts)
-router.delete('/deletepost/:postId',deletePost)
-router.put('/updatestatus/:postId',statusHandler)
-router.post('/generate-caption',captiongenerator)
-router.post('/generate-hashtags',hashtagsgenerator)
-router.post('/analyze-sentiment',sentimentanalyzer)
+router.post('/createpost', isAuthenticated, singleUpload,createPost)
+router.get('/getallposts', isAuthenticated, getallPosts)
+router.delete('/deletepost/:postId', isAuthenticated, deletePost)
+router.put('/updatestatus/:postId', isAuthenticated, statusHandler)
+router.post('/generate-caption', isAuthenticated, captiongenerator)
+router.post('/generate-hashtags', isAuthenticated, hashtagsgenerator)
+router.post('/analyze-sentiment', isAuthenticated, sentimentanalyzer)
 
 
 

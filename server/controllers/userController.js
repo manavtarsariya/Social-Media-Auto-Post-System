@@ -1,6 +1,9 @@
 
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken"
+import dotenv from "dotenv"
+dotenv.config()
 import Joi from "joi";
 
 // Register validation
@@ -108,7 +111,8 @@ export const loginUser = async (req, res) => {
         }
 
         const { email, password } = value;
-        const user = await User.findOne({ email });
+
+        let user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({
                 message: "Invalid email or password",
@@ -123,11 +127,34 @@ export const loginUser = async (req, res) => {
                 success: false
             });
         }
-        res.status(200).json({
-            message: "Login successful",
-            success: true,
-            user
+
+        const tokenData = {
+            userId: user._id,
+        };
+
+        const token = await jwt.sign(tokenData, process.env.JWT_SECRET, {
+            expiresIn: process.env.JWT_EXPIRES_IN,
         });
+
+        user = {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+        };
+
+
+        return res.status(200)
+            .cookie("token", token, {
+                maxAge: 24 * 60 * 60 * 1000, // 1 day
+                httpOnly: true,
+                sameSite: 'strict',
+            })
+            .json({
+                message: `Welcome back ${user.name}`,
+                user,
+                success: true,
+            });
+
     } catch (error) {
         console.error("Error in loginUser:", error);
         res.status(500).json({
@@ -136,3 +163,24 @@ export const loginUser = async (req, res) => {
         });
     }
 }
+
+export const logout = async (req, res) => {
+  try {
+    return res.status(200)
+      .cookie("token", "", {
+        maxAge: 0, // Immediately expires the cookie
+        httpOnly: true,
+        sameSite: 'strict',
+      })
+      .json({
+        message: "Logged out successfully.",
+        success: true,
+      });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "An error occurred during logout.",
+      success: false,
+    });
+  }
+};

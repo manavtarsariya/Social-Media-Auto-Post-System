@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 dotenv.config();
+import cookieParser from "cookie-parser"
 
 import postRoutes from './routes/postRoutes.js';
 import userRoutes from './routes/userRoutes.js';
@@ -17,7 +18,10 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({
     origin:"http://localhost:5173"
 }));
-app.use(express.json());    
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser())    
 
 
 app.use('/api/user',userRoutes);
