@@ -22,7 +22,7 @@ export const deletePost = (postId) => API.delete(`/deletepost/${postId}`);
 export const generateCaption = (data) => API.post(`/generate-caption`,data,{
     
     headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
     },
     withCredentials: true
 });

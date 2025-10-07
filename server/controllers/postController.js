@@ -253,14 +253,14 @@ export const statusHandler = async (req, res) => {
 
 export const captiongenerator = async (req, res) => {
     try {
-        const { title, content } = req.body;
+        // const { title, content } = req.body;
 
         // --- Joi validation schema ---
         const schema = Joi.object({
             title: Joi.string()
                 .trim()
                 .min(1)
-                .required()
+                // .required()
                 .messages({
                     "string.empty": "Title is required and cannot be empty",
                     "any.required": "Title is required",
@@ -268,7 +268,7 @@ export const captiongenerator = async (req, res) => {
             content: Joi.string()
                 .trim()
                 .min(1)
-                .required()
+                // .required()
                 .messages({
                     "string.empty": "Content is required and cannot be empty",
                     "any.required": "Content is required",
@@ -276,36 +276,77 @@ export const captiongenerator = async (req, res) => {
         });
 
         // --- Validate request body ---
-        const { error } = schema.validate({ title, content });
-        if (error) {
+        // const { error } = schema.validate({ title, content });
+        // if (error) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: error.details[0].message,
+        //     });
+        // }
+
+        if (!req.file) {
             return res.status(400).json({
                 success: false,
-                message: error.details[0].message,
+                message: "No image file provided for hashtag generation.",
             });
+        }
+
+        let imageUrl = "";
+
+        if (req.file) {
+            const image = req.file
+            const fileuri = getDataUri(image)
+            const result = await cloudinary.uploader.upload(fileuri.content)
+            imageUrl = result.secure_url;
         }
 
         // --- AI caption generation ---
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-        const prompt = `
-        Act as a professional social media copywriter. Your single task is to write one compelling caption based on the provided Title and Content.
+        // const prompt = `
+        // Act as a professional social media copywriter. Your single task is to write one compelling caption based on the provided Title and Content.
+
+        // ---
+        // INSTRUCTIONS:
+        // - The tone must be: Engaging and Conversational
+        // - The length should be approximately: 2 to 3 short sentences (around 150 characters)
+        // - Use the Title as the main subject and the Content for details.
+        // - CRITICAL: Do NOT include hashtags.
+        // - CRITICAL: Do NOT include emojis.
+        // - CRITICAL: Do NOT include any text other than the caption itself.
+        // ---
+        // PROVIDED DETAILS:
+        // - Title: "${title}"
+        // - Content: "${content}"
+        // `;
+
+        const captionPrompt = `
+        Act as a professional social media copywriter. Your single task is to write one compelling caption based ONLY on the visual content of the provided image.
 
         ---
         INSTRUCTIONS:
         - The tone must be: Engaging and Conversational
         - The length should be approximately: 2 to 3 short sentences (around 150 characters)
-        - Use the Title as the main subject and the Content for details.
         - CRITICAL: Do NOT include hashtags.
         - CRITICAL: Do NOT include emojis.
         - CRITICAL: Do NOT include any text other than the caption itself.
         ---
-        PROVIDED DETAILS:
-        - Title: "${title}"
-        - Content: "${content}"
         `;
 
-        const result = await model.generateContent(prompt);
+        // const imagePart = PartMaker.fromUri(imageUrl, image.mimetype)
+        const contents = [
+            {
+                // This is the structure PartMaker.fromUri would generate:
+                fileData: {
+                    mimeType: req.file.mimetype, // from req.file.mimetype
+                    fileUri: imageUrl,        // the Cloudinary URL
+                },
+            },
+            { text: captionPrompt },
+        ];
+
+        const result = await model.generateContent({ contents });
         const response = await result.response;
         const aiCaption = response.text();
 

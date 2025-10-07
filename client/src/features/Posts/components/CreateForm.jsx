@@ -59,18 +59,37 @@ const CreateForm = () => {
 
         const { title, content } = getValues();
 
-         if (!title || !content) {
-            toast.error("Please enter a title and content to generate captions.");
+        // if (!title || !content) {
+        //     toast.error("Please enter a title and content to generate captions.");
+        //     return;
+        // }
+
+        // if (!title.trim() && !content.trim()) {
+        //     toast.error("Please enter title or content first");
+        //     return;
+        // }
+
+        const fileList = getValues('file');
+
+        // Check if a file was actually selected
+        if (!fileList || fileList.length === 0 || !fileList[0]) {
+            toast.error("Please upload an image file to generate hashtags.");
             return;
         }
 
-        if (!title.trim() && !content.trim()) {
-            toast.error("Please enter title or content first");
-            return;
-        }
+        const imageFile = fileList[0]; // Get the actual File object
+
+        // 2. Prepare the FormData object for the API call
+        const formData = new FormData();
+        formData.append('image', imageFile); //
+        formData.append('title', title); //
+        formData.append('content', content); //
+
+
         try {
             setTemp1(true);
-            const res = await generateCaption({ title, content });
+            
+            const res = await generateCaption(formData);
             // Update the form state using setValue
             setValue("aiCaption", res.data.caption, { shouldValidate: true });
         } catch (err) {
@@ -140,7 +159,7 @@ const CreateForm = () => {
             return;
         }
 
-        if (data.platforms.length>=1 && !data.scheduleTime ) {
+        if (data.platforms.length >= 1 && !data.scheduleTime) {
             toast.error("Please select Scheduled Time for selected platforms.");
             return;
         }
