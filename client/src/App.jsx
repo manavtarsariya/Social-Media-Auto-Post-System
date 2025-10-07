@@ -8,39 +8,66 @@ import Createpostpage from "./pages/Createpostpage";
 import AllPosts from "./pages/AllPosts";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import { useEffect, useState } from "react";
+import FinaleLayout from "./pages/FinaleLayout";
+
 
 function App() {
-  // const [count, setCount] = useState(0)
+  const [isLogin, setIsLogin] = useState(false)
+
+  useEffect(() => {
+
+    console.log(isLogin)
+  })
 
   const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home/>,
-  },
-  {
-    path: "/createpost",
-    element: <Createpostpage/>,
-  },
-  {
-    path: "/posts",
-    element: <AllPosts/>,
-  },
-  {
-    path: "/login",
-    element: <Login/>,
-  },
-  {
-    path: "/signup",
-    element: <SignUp/>,
-  }
-]);
+    {
+      path: "/",
+      element:
+        <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
+          <Home />
+        </FinaleLayout>,
+    },
+    {
+      path: "/createpost",
+      element:
+        <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
+          <Createpostpage />
+        </FinaleLayout>
+      ,
+    },
+    {
+      path: "/posts",
+      element:
+        <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
+          <AllPosts />
+        </FinaleLayout>
+      ,
+    },
+    {
+      path: "/login",
+      element:
+        <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
+          <Login setIsLogin={setIsLogin} />
+        </FinaleLayout>,
+    },
+    {
+      path: "/signup",
+      element:
+        <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
+          <SignUp />
+        </FinaleLayout>,
+    }
+  ]);
 
   return (
     <>
       <div>
-        <RouterProvider router={router} />
-      
         
+        <RouterProvider router={router} />
+        {/* <Navbar/> */}
+
+
       </div>
     </>
   )

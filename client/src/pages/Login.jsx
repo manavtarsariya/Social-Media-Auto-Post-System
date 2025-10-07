@@ -1,120 +1,130 @@
 import Navbar from '@/components/layout/Navbar';
+import { login } from '@/features/Users/api/users';
+import { Loader2 } from 'lucide-react';
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
+import { toast } from 'react-toastify';
 
-function Login() {
-  // State for form fields
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+function Login({setIsLogin}) {
 
-  // State for error and success messages
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+    const [temp, settemp] = useState(false)
 
-  // Handle input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+    const navigate = useNavigate()
+    // Initialize react-hook-form
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset,
+    } = useForm();
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent default form submission
-    
-    // Clear previous messages
-    setError('');
-    setSuccess('');
 
-    // --- Basic Validation ---
-    if (!formData.email || !formData.password) {
-      setError('Please enter both email and password.');
-      return;
-    }
+    const onSubmit = async (data) => {
 
-    // --- Submission Logic ---
-    // In a real application, you would send these credentials to your server for verification.
-    console.log('Login attempt with:', formData);
-    
-    // Simulate a successful login for this example
-    setSuccess(`Welcome back, ${formData.email}!`);
-    
-    // Clear form fields
-    setFormData({
-      email: '',
-      password: '',
-    });
-  };
+        try {
 
-  return (
-    <div className="bg-gray-100 flex items-center justify-center min-h-screen ">
+            settemp(true)
 
-        <Navbar/>
-      {/* Login Form Container */}
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        
-        {/* Form Header */}
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Welcome Back!</h2>
+            const res = await login(data)
 
-        {/* Display Error/Success Messages */}
-        {error && <p className="bg-red-100 text-red-700 p-3 rounded mb-4 text-center">{error}</p>}
-        {success && <p className="bg-green-100 text-green-700 p-3 rounded mb-4 text-center">{success}</p>}
-        
-        <form onSubmit={handleSubmit} noValidate>
-          
-          {/* Email Input */}
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
-            <input 
-              type="email" 
-              id="email" 
-              name="email" 
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="you@example.com"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" 
-              required
-            />
-          </div>
-          
-          {/* Password Input */}
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">Password</label>
-            <input 
-              type="password" 
-              id="password" 
-              name="password" 
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="••••••••"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" 
-              required
-            />
-          </div>
+            if (res.data.success) {
+                toast.success(res.data.message)
+                reset();
+                // onLoginSuccess(true);
+            }
+            setIsLogin(true)
+            navigate("/");
 
-          {/* Submit Button */}
-          <div className="flex items-center justify-between">
-            <button 
-              type="submit" 
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full focus:outline-none focus:shadow-outline transition duration-300">
-              Sign In
-            </button>
-          </div>
+        } catch (error) {
+            toast.error(error.response.data.message)
+            console.log(error);
 
-          {/* Link to Register Page */}
-          <p className="text-center text-gray-600 text-sm mt-6">
-            Don't have an account?{' '}
-            <a href="/signup" className="text-blue-500 hover:text-blue-700 font-bold">
-              Sign Up
-            </a>
-          </p>
-        </form>
-      </div>
-    </div>
-  );
+        } finally {
+            settemp(false)
+        }
+
+    };
+
+    return (
+        <div className="bg-gray-100 flex items-center justify-center min-h-screen">
+            <Navbar  />
+            <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md mt-17">
+                <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Welcome Back!</h2>
+
+                <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                    {/* Email Input */}
+                    <div className="mb-4">
+                        <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
+                            Email Address
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="you@example.com"
+                            {...register('email', {
+                                required: 'Email is required',
+                                pattern: {
+                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                    message: 'Enter a valid email address',
+                                },
+                            })}
+                            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight 
+                focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? 'border-red-500' : ''
+                                }`}
+                        />
+                        {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+                    </div>
+
+                    {/* Password Input */}
+                    <div className="mb-6">
+                        <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
+                            Password
+                        </label>
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="••••••••"
+                            {...register('password', {
+                                required: 'Password is required',
+                                minLength: {
+                                    value: 6,
+                                    message: 'Password must be at least 6 characters',
+                                },
+                            })}
+                            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight 
+                focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border-red-500' : ''
+                                }`}
+                        />
+                        {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="flex items-center justify-between">
+                        {
+                            !temp ?
+                                <button
+                                    type="submit"
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full focus:outline-none focus:shadow-outline transition duration-300"
+                                > Login </button>
+                                :
+                                <div className="flex items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full focus:outline-none focus:shadow-outline transition duration-300">
+                                    <Loader2 className=" h-5 w-5 mr-1 animate-spin"></Loader2> <span>Please Wait</span>
+                                </div>
+                        }
+                    </div>
+
+                    {/* Link to Register Page */}
+                    <p className="text-center text-gray-600 text-sm mt-6">
+                        Don't have an account?{' '}
+                        <a href="/signup" className="text-blue-500 hover:text-blue-700 font-bold">
+                            Sign Up
+                        </a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    );
 }
 
 export default Login;

@@ -1,10 +1,37 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import logo from "../../assets/logo-2.png"
+import { toast } from "react-toastify";
+import { logout } from "@/features/Users/api/users";
+// import { useState } from "react";
 
-export default function Navbar() {
+
+export default function Navbar({ isLogin, setIsLogin }) {
+
+  // const [isLoggedin, setisLogin] = useState(false)
+
 
   const navigate = useNavigate()
+
+  const logoutHandler = async () => {
+
+    try {
+
+      const res = await logout()
+
+      if (res.data.success) {
+        toast.success(res.data.message)
+        // console.lo
+        setIsLogin(false)
+      }
+
+    } catch (error) {
+      toast.error(error.response.data.message)
+      console.log(error)
+
+    }
+
+  }
 
 
   return (
@@ -26,13 +53,25 @@ export default function Navbar() {
 
           {/* Profile */}
           <div className="flex items-center space-x-2">
-            
-            <Button variant={"outline"} className={`text-black`}
-            onClick={()=>navigate("/login")}
-            >LogIn</Button>
-            <Button variant={"outline"} className={`text-black `}
-            onClick={()=>(navigate("/signup"))}
-            >SignUp</Button>
+
+            {
+              !isLogin ?
+                <>
+                  <Button variant={"outline"} className={`text-black`}
+                    onClick={() => navigate("/login")}
+                  >LogIn</Button>
+
+                  <Button variant={"outline"} className={`text-black `}
+                    onClick={() => (navigate("/signup"))}
+                  >SignUp</Button>
+                </>
+                :
+                <>
+                  <Button variant={"outline"} className={`text-black `}
+                    onClick={logoutHandler}
+                  >Logout</Button>
+                </>
+            }
 
           </div>
         </div>

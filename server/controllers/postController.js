@@ -6,7 +6,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai"
 import Joi from "joi"
 
 const createPostSchema = Joi.object({
-    userId: Joi.string().optional(),
+    userId: Joi.string().required(),
     title: Joi.string().required().messages({
         'string.empty': 'Title is required',
     }),
@@ -34,14 +34,16 @@ export const createPost = async (req, res) => {
 
 
 
-    const { userId, title, content, hashtags, scheduleTime, platforms, aiCaption } = req.body;
+    const { title, content, hashtags, scheduleTime, platforms, aiCaption } = req.body;
 
-   if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
-    return res.status(400).json({
-        message: "Invalid User ID",
-        success: false
-    });
-}
+    const userId = req.id
+
+    if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({
+            message: "Invalid User ID",
+            success: false
+        });
+    }
 
     if (!title.trim()) {
         return res.status(400).json({
@@ -137,7 +139,9 @@ export const createPost = async (req, res) => {
 
 export const getallPosts = async (req, res) => {
     try {
-        const posts = await Post.find().sort({ createdAt: -1 });;
+        const userId= req.id
+
+        const posts = await Post.find({userId : userId}).sort({ createdAt: -1 });;
         if (posts.length === 0) {
             return res.status(404).json({
                 message: "No posts found",
@@ -315,7 +319,7 @@ export const captiongenerator = async (req, res) => {
 
 
 export const hashtagsgenerator = async (req, res) => {
-     try {
+    try {
         const { title, content } = req.body;
 
         // --- Joi Validation Schema ---
@@ -388,7 +392,7 @@ export const hashtagsgenerator = async (req, res) => {
 
 export const sentimentanalyzer = async (req, res) => {
 
-     try {
+    try {
         const { textToAnalyze } = req.body;
 
         // --- Joi Validation Schema ---

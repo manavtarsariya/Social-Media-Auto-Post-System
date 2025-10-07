@@ -8,15 +8,17 @@ import Joi from "joi";
 
 // Register validation
 const registerValidationSchema = Joi.object({
-    name: Joi.string()
+    username: Joi.string()
         .trim()
         .min(2)
         .max(50)
         .required()
+        .pattern(/^\S+$/)
         .messages({
-            "string.empty": "Name is required",
-            "string.min": "Name must be at least 2 characters",
-            "string.max": "Name must be less than 50 characters",
+            "string.empty": "userame is required",
+            "string.min": "username must be at least 2 characters",
+            "string.max": "username must be less than 50 characters",
+            "string.pattern.base": "Username should not contain spaces",
         }),
     email: Joi.string()
         .email()
@@ -46,7 +48,7 @@ export const registerUser = async (req, res) => {
             });
         }
 
-        const { name, email, password } = value;
+        const { username, email, password } = value;
 
         const existingUser = await User.findOne({ email });
 
@@ -59,7 +61,7 @@ export const registerUser = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({
-            name,
+            username,
             email,
             password: hashedPassword
         });
@@ -138,7 +140,7 @@ export const loginUser = async (req, res) => {
 
         user = {
             id: user._id,
-            name: user.name,
+            username: user.username,
             email: user.email,
         };
 
@@ -147,10 +149,11 @@ export const loginUser = async (req, res) => {
             .cookie("token", token, {
                 maxAge: 24 * 60 * 60 * 1000, // 1 day
                 httpOnly: true,
-                sameSite: 'strict',
+                // sameSite: 'lax', // or 'none' if using https
+                // secure: false,   // true if using https
             })
             .json({
-                message: `Welcome back ${user.name}`,
+                message: `Welcome back ${user.username}`,
                 user,
                 success: true,
             });
@@ -165,22 +168,22 @@ export const loginUser = async (req, res) => {
 }
 
 export const logout = async (req, res) => {
-  try {
-    return res.status(200)
-      .cookie("token", "", {
-        maxAge: 0, // Immediately expires the cookie
-        httpOnly: true,
-        sameSite: 'strict',
-      })
-      .json({
-        message: "Logged out successfully.",
-        success: true,
-      });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      message: "An error occurred during logout.",
-      success: false,
-    });
-  }
+    try {
+        return res.status(200)
+            .cookie("token", "", {
+                maxAge: 0, // Immediately expires the cookie
+                httpOnly: true,
+                sameSite: 'strict',
+            })
+            .json({
+                message: "Logged out successfully.",
+                success: true,
+            });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "An error occurred during logout.",
+            success: false,
+        });
+    }
 };
