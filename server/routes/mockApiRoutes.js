@@ -4,9 +4,9 @@ import isAuthenticated from '../middleware/isAuthenticated.js';
 
 const router = express.Router();
 
-router.post("/twitter",isAuthenticated,twitterHandler)
-router.post("/linkedin",isAuthenticated, linkedinHandler)
-router.post("/facebook",isAuthenticated, facebookHandler)
+router.get("/twitter",twitterHandler)
+router.get("/linkedin", linkedinHandler)
+router.get("/facebook", facebookHandler)
 
 
 export default router;

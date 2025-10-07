@@ -1,12 +1,11 @@
 import Navbar from '@/components/layout/Navbar';
-import { login } from '@/features/Users/api/users';
 import { Loader2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 
-function Login({setIsLogin}) {
+function Login() {
 
     const [temp, settemp] = useState(false)
 
@@ -26,14 +25,27 @@ function Login({setIsLogin}) {
 
             settemp(true)
 
-            const res = await login(data)
+            const response = await fetch('http://localhost:8000/api/user/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include', // very important for sending/receiving cookies
+                body: JSON.stringify(data),
+            });
 
-            if (res.data.success) {
-                toast.success(res.data.message)
+            // const res = await login(data)
+            const result = await response.json();
+            // console.log(result)
+            // return result;
+
+            if (result.success) {
+                toast.success(result.message)
                 reset();
+                // isLogin.current = true
                 // onLoginSuccess(true);
             }
-            setIsLogin(true)
+            // setIsLogin(true)
             navigate("/");
 
         } catch (error) {
@@ -48,7 +60,7 @@ function Login({setIsLogin}) {
 
     return (
         <div className="bg-gray-100 flex items-center justify-center min-h-screen">
-            <Navbar  />
+            <Navbar />
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md mt-17">
                 <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Welcome Back!</h2>
 

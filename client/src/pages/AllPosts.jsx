@@ -4,6 +4,7 @@ import { getAllPosts } from '@/features/Posts/api/post'
 import FilterCard from '@/features/Posts/components/FilterCard'
 import PostAnalytics from '@/features/Posts/components/PostAnalytics'
 import Posts from '@/features/Posts/components/Posts'
+import axios from 'axios'
 import React, { useEffect, useMemo, useState } from 'react'
 
 const AllPosts = () => {
@@ -13,7 +14,12 @@ const AllPosts = () => {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const response = await getAllPosts();
+        const response = await axios.get('http://localhost:8000/api/posts/getallposts',{withCredentials:true})
+        // const response = await fetch('http://localhost:8000/api/posts/getallposts', {
+        //   method: 'GET',
+        //   // credentials: 'include', // same as withCredentials: true
+        // });
+        console.log(response.data)
         const posts = response.data.posts || [];
         setAllPosts(posts);
         setFilterPosts(posts);
@@ -36,8 +42,8 @@ const AllPosts = () => {
     }
   };
 
-const { pendingPost, scheduledPost, postedPost, failedPost } = useMemo(() => {
-    let scheduled = 0, posted = 0, failed = 0,pending=0;
+  const { pendingPost, scheduledPost, postedPost, failedPost } = useMemo(() => {
+    let scheduled = 0, posted = 0, failed = 0, pending = 0;
 
     filterPosts.forEach((item) => {
       switch (item.status.toLowerCase()) {
@@ -58,7 +64,7 @@ const { pendingPost, scheduledPost, postedPost, failedPost } = useMemo(() => {
       }
     });
 
-    return { scheduledPost: scheduled, postedPost: posted, failedPost: failed, pendingPost:pending };
+    return { scheduledPost: scheduled, postedPost: posted, failedPost: failed, pendingPost: pending };
   }, [filterPosts]);
 
   return (
@@ -67,7 +73,7 @@ const { pendingPost, scheduledPost, postedPost, failedPost } = useMemo(() => {
       <FilterCard onFilter={handleFilter} />
       <PostAnalytics count_posted_post={postedPost} count_failed_post={failedPost} count_scheduled_post={scheduledPost} count_pending_post={pendingPost} />
       <Posts filterPosts={filterPosts} setFilterPosts={setFilterPosts} />
-      <Footer/>
+      <Footer />
     </div>
   )
 }

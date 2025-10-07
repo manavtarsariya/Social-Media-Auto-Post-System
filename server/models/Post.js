@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 const PostSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "User",
+        required: true
     },
     title: {
         type: String,
@@ -27,17 +28,17 @@ const PostSchema = new mongoose.Schema({
         enum: ["pending", "scheduled", "posted", "failed"],
         default: "pending"
     },
-    
+
     platforms: [{
         type: String,
         enum: ["twitter", "linkedin", "facebook"],
-    }], 
+    }],
     aiCaption: {
         type: String
-    }, 
+    },
 
-},{timestamps: true});
+}, { timestamps: true });
 
 
-export const Post = mongoose.model("Post", PostSchema);      
+export const Post = mongoose.model("Post", PostSchema);
 export default Post;

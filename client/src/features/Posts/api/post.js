@@ -27,13 +27,12 @@ export const generateCaption = (data) => API.post(`/generate-caption`,data,{
     withCredentials: true
 });
 
-// export const generateHashtags = (data) => API.post(`/generate-hashtags`,data,{
+export const generateHashtags = (data) => API.post(`/generate-hashtags`,data,{
     
-//     headers: {
-//         'Content-Type': 'application/json',
-//     },
-//     withCredentials: true
-// });
+    headers: {
+        'Content-Type': 'application/json',
+    }
+});
 
 export const analyzeSentiment = (data) => API.post(`/analyze-sentiment`,data,{
     

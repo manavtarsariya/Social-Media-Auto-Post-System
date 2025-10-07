@@ -16,7 +16,7 @@ export const login = (data) => API.post(`/login`,data,{
     },
 });
 
-export const logout = () => API.post(`/logout`,{
+export const logout = () => API.get(`/logout`,{
     
     headers: {
         'Content-Type': 'application/json',

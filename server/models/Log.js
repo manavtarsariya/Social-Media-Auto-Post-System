@@ -14,9 +14,14 @@ const LogSchema = new mongoose.Schema({
         enum: ["true", "false"],
         required: true
     },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
     finaleresponse: { type: String }, // store API response or error
 
-},{ timestamps: true });
+}, { timestamps: true });
 
-export const Log =  mongoose.model("Log", LogSchema);
+export const Log = mongoose.model("Log", LogSchema);
 export default Log;

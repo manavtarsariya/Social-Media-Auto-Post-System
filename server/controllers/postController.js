@@ -6,7 +6,6 @@ import { GoogleGenerativeAI } from "@google/generative-ai"
 import Joi from "joi"
 
 const createPostSchema = Joi.object({
-    userId: Joi.string().required(),
     title: Joi.string().required().messages({
         'string.empty': 'Title is required',
     }),
@@ -37,10 +36,11 @@ export const createPost = async (req, res) => {
     const { title, content, hashtags, scheduleTime, platforms, aiCaption } = req.body;
 
     const userId = req.id
+    // console.log(userId)
 
     if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
         return res.status(400).json({
-            message: "Invalid User ID",
+            message: "please provide valid User ID",
             success: false
         });
     }
@@ -77,6 +77,11 @@ export const createPost = async (req, res) => {
             });
         }
     }
+
+    if (!aiCaption) {
+        status = "failed";
+    }
+
 
     let platformsArray = [];
 
@@ -139,9 +144,9 @@ export const createPost = async (req, res) => {
 
 export const getallPosts = async (req, res) => {
     try {
-        const userId= req.id
+        const userId = req.id
 
-        const posts = await Post.find({userId : userId}).sort({ createdAt: -1 });;
+        const posts = await Post.find({ userId: userId }).sort({ createdAt: -1 });;
         if (posts.length === 0) {
             return res.status(404).json({
                 message: "No posts found",

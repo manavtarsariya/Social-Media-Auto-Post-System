@@ -134,7 +134,7 @@ export const loginUser = async (req, res) => {
             userId: user._id,
         };
 
-        const token = await jwt.sign(tokenData, process.env.JWT_SECRET, {
+        const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRES_IN,
         });
 
@@ -145,18 +145,18 @@ export const loginUser = async (req, res) => {
         };
 
 
-        return res.status(200)
-            .cookie("token", token, {
-                maxAge: 24 * 60 * 60 * 1000, // 1 day
-                httpOnly: true,
-                // sameSite: 'lax', // or 'none' if using https
-                // secure: false,   // true if using https
-            })
-            .json({
-                message: `Welcome back ${user.username}`,
-                user,
-                success: true,
-            });
+
+        res.cookie("token", token, {
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+            httpOnly: true,
+            sameSite: 'strict',
+        });
+
+        return res.status(200).json({
+            message: `Welcome back ${user.username}`,
+            user,
+            success: true,
+        });
 
     } catch (error) {
         console.error("Error in loginUser:", error);

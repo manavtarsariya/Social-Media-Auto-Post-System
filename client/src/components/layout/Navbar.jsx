@@ -3,12 +3,39 @@ import { Button } from "../ui/button";
 import logo from "../../assets/logo-2.png"
 import { toast } from "react-toastify";
 import { logout } from "@/features/Users/api/users";
+// import { useMemo, useState } from "react";
+// import { getAllPosts } from "@/features/Posts/api/post";
 // import { useState } from "react";
 
 
-export default function Navbar({ isLogin, setIsLogin }) {
+export default function Navbar() {
 
-  // const [isLoggedin, setisLogin] = useState(false)
+  // const [isLoggedin, setisLoggedin] = useState( )
+  // console.log("Navbar",isLogin.current)
+
+  // useMemo(()=>{
+
+  //   async function name() {
+
+  //   try {
+  //     const res = await getAllPosts()
+
+  //     if (res.data.success) {
+  //       setisLoggedin(true)
+  //     } else {
+  //       setisLoggedin(false)
+
+  //     }
+
+  //   } catch (error) {
+  //     setisLoggedin(false)
+  //   }
+
+  // }
+  // name()
+
+  // },[])
+  
 
 
   const navigate = useNavigate()
@@ -19,10 +46,12 @@ export default function Navbar({ isLogin, setIsLogin }) {
 
       const res = await logout()
 
+
       if (res.data.success) {
         toast.success(res.data.message)
         // console.lo
-        setIsLogin(false)
+        // isLogin.current = false
+        navigate("/")
       }
 
     } catch (error) {
@@ -54,24 +83,24 @@ export default function Navbar({ isLogin, setIsLogin }) {
           {/* Profile */}
           <div className="flex items-center space-x-2">
 
-            {
-              !isLogin ?
-                <>
-                  <Button variant={"outline"} className={`text-black`}
-                    onClick={() => navigate("/login")}
-                  >LogIn</Button>
+            {/* {isLoggedin ? */}
 
-                  <Button variant={"outline"} className={`text-black `}
-                    onClick={() => (navigate("/signup"))}
-                  >SignUp</Button>
-                </>
-                :
-                <>
-                  <Button variant={"outline"} className={`text-black `}
-                    onClick={logoutHandler}
-                  >Logout</Button>
-                </>
-            }
+              <>
+                <Button variant={"outline"} className={`text-black`}
+                  onClick={() => navigate("/login")}
+                >LogIn</Button>
+
+                <Button variant={"outline"} className={`text-black `}
+                  onClick={() => (navigate("/signup"))}
+                >SignUp</Button>
+              </>
+              {/* : */}
+              <>
+                <Button variant={"outline"} className={`text-black `}
+                  onClick={() => logoutHandler()}
+                >Log out</Button>
+              </>
+            {/* } */}
 
           </div>
         </div>

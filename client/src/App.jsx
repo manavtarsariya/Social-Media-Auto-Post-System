@@ -24,39 +24,39 @@ function App() {
     {
       path: "/",
       element:
-        <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
+        // <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
           <Home />
-        </FinaleLayout>,
+        // </FinaleLayout>,
     },
     {
       path: "/createpost",
       element:
-        <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
+        // <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
           <Createpostpage />
-        </FinaleLayout>
-      ,
+        // </FinaleLayout>
+      
     },
     {
       path: "/posts",
       element:
-        <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
+        // <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
           <AllPosts />
-        </FinaleLayout>
+        // </FinaleLayout>
       ,
     },
     {
       path: "/login",
       element:
-        <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
+        // <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
           <Login setIsLogin={setIsLogin} />
-        </FinaleLayout>,
+        // </FinaleLayout>,
     },
     {
       path: "/signup",
       element:
-        <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
+        // <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
           <SignUp />
-        </FinaleLayout>,
+        // </FinaleLayout>,
     }
   ]);
 

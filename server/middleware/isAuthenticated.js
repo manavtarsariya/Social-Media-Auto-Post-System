@@ -4,8 +4,10 @@ dotenv.config()
 
 const isAuthenticated = async (req, res, next) => {
   try {
+
+    // console.log(req)
     const token = req.cookies.token;
-    console.log(req.cookies.token)
+    // console.log(req.cookies.token)
 
     if (!token) {
       return res.status(401).json({
@@ -24,6 +26,7 @@ const isAuthenticated = async (req, res, next) => {
     }
 
     req.id = decode.userId; // Attach the user ID to the request object
+    // console.log(req.id)
 
     next(); // Proceed to the next middleware or route handler
     
