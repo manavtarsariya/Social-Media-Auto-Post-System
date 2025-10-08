@@ -41,87 +41,108 @@ const CreateForm = () => {
 
 
 
-    // const changeHandler = (e) => {
-    //     setFormData({
-    //         ...formData,
-    //         [e.target.name]: e.target.value
-    //     });
-    // }
-
-    // const fileChangeHandler = (e) => {
-    //     setFormData({
-    //         ...formData,
-    //         file: e.target?.files?.[0]
-    //     });
-    // }
-
     const captiongenerator = async () => {
 
         const { title, content } = getValues();
 
-        // if (!title || !content) {
-        //     toast.error("Please enter a title and content to generate captions.");
-        //     return;
-        // }
-
-        // if (!title.trim() && !content.trim()) {
-        //     toast.error("Please enter title or content first");
-        //     return;
-        // }
-
         const fileList = getValues('file');
 
-        // Check if a file was actually selected
-        if (!fileList || fileList.length === 0 || !fileList[0]) {
-            toast.error("Please upload an image file to generate hashtags.");
+
+        if ((!fileList || fileList.length === 0) && (!title.trim() && !content.trim())) {
+            toast.error("Please Provide the image file or title and content for caption generation.");
             return;
         }
 
-        const imageFile = fileList[0]; // Get the actual File object
 
-        // 2. Prepare the FormData object for the API call
-        const formData = new FormData();
-        formData.append('image', imageFile); //
-        formData.append('title', title); //
-        formData.append('content', content); //
+        if (fileList && fileList.length !== 0 && fileList[0]) {
+
+            const imageFile = fileList[0];
+            const formData = new FormData();
+            formData.append('file', imageFile);
+
+            try {
+                setTemp1(true);
+
+                const res = await generateCaption(formData);
+                // Update the form state using setValue
+                setValue("aiCaption", res.data.caption, { shouldValidate: true });
+            } catch (err) {
+                toast.error(err.response?.data?.message || "Failed to generate caption");
+            } finally {
+                setTemp1(false);
+            }
+
+        } else {
+
+            const formData = new FormData();
+            formData.append('title', title); //
+            formData.append('content', content); //
 
 
-        try {
-            setTemp1(true);
-            
-            const res = await generateCaption(formData);
-            // Update the form state using setValue
-            setValue("aiCaption", res.data.caption, { shouldValidate: true });
-        } catch (err) {
-            toast.error(err.response?.data?.message || "Failed to generate caption");
-        } finally {
-            setTemp1(false);
+            try {
+                setTemp1(true);
+
+                const res = await generateCaption(formData);
+                // Update the form state using setValue
+                setValue("aiCaption", res.data.caption, { shouldValidate: true });
+            } catch (err) {
+                toast.error(err.response?.data?.message || "Failed to generate caption");
+            } finally {
+                setTemp1(false);
+            }
+
         }
+
     }
 
     const hashtagsgenerator = async () => {
 
         const { title, content } = getValues();
 
-        if (!title || !content) {
-            toast.error("Please enter a title and content to generate hashtags.");
+        const fileList = getValues('file');
+
+
+        if ((!fileList || fileList.length === 0) && (!title.trim() && !content.trim())) {
+            toast.error("Please Provide the image file or title and content for hashtags generation.");
             return;
         }
 
 
-        if (!title.trim() && !content.trim()) {
-            toast.error("Please enter title or content first");
-            return;
+        if (fileList && fileList.length !== 0 && fileList[0]) {
+
+            const imageFile = fileList[0];
+            const formData = new FormData();
+            formData.append('file', imageFile);
+
+
+            try {
+                setTemp2(true);
+                const res = await generateHashtags(formData);
+                setValue("hashtags", res.data.hashtags, { shouldValidate: true });
+            } catch (err) {
+                toast.error(err.response?.data?.message || "Failed to generate hashtags");
+            } finally {
+                setTemp2(false);
+            }
+
+        } else {
+
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('content', content);
+
+            try {
+                setTemp2(true);
+                const res = await generateHashtags(formData);
+                setValue("hashtags", res.data.hashtags, { shouldValidate: true });
+            } catch (err) {
+                toast.error(err.response?.data?.message || "Failed to generate hashtags");
+            } finally {
+                setTemp2(false);
+            }
+
         }
-        try {
-            setTemp2(true);
-            const res = await generateHashtags({ title, content });
-            setValue("hashtags", res.data.hashtags, { shouldValidate: true });
-        } catch (err) {
-            toast.error(err.response?.data?.message || "Failed to generate hashtags");
-        } finally {
-            setTemp2(false);
-        }
+
 
     }
 
@@ -197,63 +218,7 @@ const CreateForm = () => {
         Mixed: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
     };
 
-    // const platformChangeHandler = (e) => {
-    //     const { value, checked } = e.target;
-
-    //     let updatedPlatforms = [...formData.platforms];
-
-    //     if (checked) {
-    //         updatedPlatforms.push(value);
-    //     } else {
-    //         updatedPlatforms = updatedPlatforms.filter((platform) => platform !== value);
-    //     }
-    //     setFormData({
-    //         ...formData,
-    //         platforms: updatedPlatforms
-    //     });
-    // }
-
-
-    // const submitHandler = async (e) => {
-    //     e.preventDefault();
-
-    //     const data = new FormData();
-    //     data.append('title', formData.title);
-    //     data.append('content', formData.content);
-    //     data.append('hashtags', formData.hashtags);
-    //     data.append('scheduleTime', formData.scheduleTime);
-    //     data.append('platforms', JSON.stringify(formData.platforms));
-    //     data.append('aiCaption', formData.aiCaption);
-
-    //     if (formData.file) {
-    //         data.append('file', formData.file);
-    //     }
-
-    //     try {
-
-    //         setTemp(true);
-    //         const res = await createPost(data);
-    //         console.log(res.data);
-
-
-    //         if (res.data.success) {
-
-    //             toast.success(res?.data?.message);
-    //             navigate('/posts');
-    //         }
-
-
-
-    //     } catch (error) {
-    //         console.log(error);
-    //         toast.error(error?.response?.data?.message || "Something went wrong");
-
-    //     } finally {
-    //         setTemp(false);
-    //     }
-
-    // }
-
+  
     const formatLocalDateTime = (date) => {
         const pad = (n) => n.toString().padStart(2, "0");
 
