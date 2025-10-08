@@ -48,9 +48,9 @@ function App() {
     {
       path: "/updatepost/:id",
       element:
-        // <ProtectedRouteUser>
+        <ProtectedRouteUser>
           <UpdatePost />
-        // {/* </ProtectedRouteUser> */}
+        </ProtectedRouteUser>
 
       ,
     },

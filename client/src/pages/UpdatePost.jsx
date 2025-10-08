@@ -21,7 +21,7 @@ const UpdatePost = () => {
             try {
 
                 const res = await findpost(id);
-                console.log(res.data.postdetails)
+                // console.log(res.data.postdetails)
 
                 dispatch(setEditpost(res.data.postdetails))
                 

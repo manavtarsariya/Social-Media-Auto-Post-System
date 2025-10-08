@@ -1,15 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Navbar from "@/components/layout/Navbar";
 import { toast } from "react-toastify";
 import { signUp } from "@/features/Users/api/users";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 
 function SignUp() {
 
-    const [temp, settemp] = useState(false)
+    const { user } = useSelector(store => store.auth)
     const navigate = useNavigate()
+
+
+
+    const [temp, settemp] = useState(false)
+
 
     const {
         register,
@@ -43,11 +49,18 @@ function SignUp() {
         }
     };
 
+    useEffect(() => {
+        if (user) {
+            navigate("/")
+        }
+    }, [navigate, user])
+
     return (
-        <div className="bg-gray-100 flex items-center justify-center min-h-screen">
+        <div className="bg-gray-900 flex items-center justify-center min-h-screen">
             <Navbar />
 
-            <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md mt-17">
+            <div className="bg-gradient-to-r from-pink-400 to-orange-400/90 p-8 rounded-lg shadow-md w-full max-w-md mt-17">
+
                 <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
                     Create Your Account
                 </h2>
@@ -83,8 +96,8 @@ function SignUp() {
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         {errors.username && (
-                            <p className="text-red-600 text-sm mt-1">
-                                {errors.username.message}
+                            <p className="text-white font-medium text-sm mt-1">
+                                * {errors.username.message}
                             </p>
                         )}
                     </div>
@@ -110,8 +123,8 @@ function SignUp() {
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         {errors.email && (
-                            <p className="text-red-600 text-sm mt-1">
-                                {errors.email.message}
+                            <p className="text-white font-medium text-sm mt-1">
+                                * {errors.email.message}
                             </p>
                         )}
                     </div>
@@ -138,8 +151,8 @@ function SignUp() {
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         {errors.password && (
-                            <p className="text-red-600 text-sm mt-1">
-                                {errors.password.message}
+                            <p className="text-white font-medium text-sm mt-1">
+                                * {errors.password.message}
                             </p>
                         )}
                     </div>
@@ -164,8 +177,8 @@ function SignUp() {
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         {errors.confirmPassword && (
-                            <p className="text-red-600 text-sm mt-1">
-                                {errors.confirmPassword.message}
+                            <p className="text-white font-medium text-sm mt-1">
+                                * {errors.confirmPassword.message}
                             </p>
                         )}
                     </div>

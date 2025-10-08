@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { analyzeSentiment, generateCaption, generateHashtags, updatepost, } from '../api/post';
 import { toast } from 'react-toastify';
-import { Loader2, MessageSquareQuote, SpaceIcon, Sparkle, Sparkles } from 'lucide-react';
-import { useNavigate } from 'react-router';
+import { Loader2, MessageSquareQuote, MoveLeft, SpaceIcon, Sparkle, Sparkles } from 'lucide-react';
+import { Link, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
@@ -31,19 +31,8 @@ const UpdatePostForm = () => {
 
     useEffect(() => {
         setPreview(editpost.imageUrl); // ✅ Set existing Cloudinary image
-        // if (editpost?.imageUrl) {
-        // }
     }, [editpost]);
 
-    console.log(preview)
-
-    // When user selects a new file
-    // const handleFileChange = (e) => {
-    //     const file = e.target.files[0];
-    //     if (file) {
-    //         setPreview(URL.createObjectURL(file)); // ✅ Show new preview instantly
-    //     }
-    // };
 
     const {
         handleSubmit,
@@ -235,20 +224,7 @@ const UpdatePostForm = () => {
             return;
         }
 
-        // const now = new Date();
-        // const selected = new Date(data.scheduleTime);
-        // const previous = editpost?.scheduleTime ? new Date(editpost.scheduleTime) : null;
 
-        // // Allow if user keeps the previous time
-        // if (previous && selected.getTime() === previous.getTime()) {
-
-        // } else {
-        //     // Must be at least +1 minute from now
-        //     if (selected.getTime() < now.getTime() + 60 * 1000) {
-        //         toast.error("Please select a time at least 1 minute in the future.");
-        //         return;
-        //     }
-        // }
 
         try {
             const formPayload = new FormData();
@@ -303,9 +279,10 @@ const UpdatePostForm = () => {
 
             <form action="" onSubmit={handleSubmit(submitHandler)} className='mt-4'>
 
-                <h1 className='font-bold text-5xl text-center p-2 mb-5 text-transparent bg-clip-text bg-gradient-to-bl from-yellow-200 to-red-500'>Create Post </h1>
+                <Link to={"/posts"} className='text-blue-900'><p className='h-5 w-15  bg-blue-200 rounded-full flex justify-center items-center p-3 hover:bg-blue-300'><MoveLeft/></p></Link> 
+                 
+                <h1 className='font-bold text-5xl text-center p-2 mb-5 text-transparent bg-clip-text bg-gradient-to-bl from-yellow-200 to-red-500'>Update Post </h1>
                 <hr className='mb-14' />
-
                 <div className='mt-4 flex justify-center items-center'>
                     <label htmlFor="title" className='block text-lg font-medium text-white w-1/4'>Title</label>
                     <input
@@ -383,41 +360,6 @@ const UpdatePostForm = () => {
                     <input
                         type="datetime-local"
                         id='schedule'
-
-                        // min={(() => {
-                        //     const now = new Date();
-                        //     const previous = editpost?.scheduleTime ? new Date(editpost.scheduleTime) : null;
-
-                        //     if (!previous) {
-                        //         // No previous value → enforce +1 minute rule
-                        //         now.setMinutes(now.getMinutes() + 1);
-                        //         return formatLocalDateTime(now);
-                        //     }
-                            
-
-                        //     // If user keeps the previous time → allow selecting it
-                        //     return formatLocalDateTime(previous > now ? previous : new Date(now.getTime() + 60 * 1000));
-                        //     // const now = new Date();
-                        //     // const selected = new Date(data.scheduleTime);
-                        //     // const preselected = new Date(editpost.scheduleTime);
-
-                        //     // if ((selected.getTime() != preselected.getTime()) && (selected.getTime() < now.getTime())) {
-                        //     //     toast.error("Schedule time must be at least +1 minute in the future.");
-                        //     //     return;
-                        //     // }
-
-                        //     // if (data.scheduleTime && !data.platforms.length) {
-                        //     //     toast.error("Please select atleast one platform for the scheduled Post.");
-                        //     //     return;
-                        //     // }
-
-                        //     // if (data.platforms.length >= 1 && !data.scheduleTime) {
-                        //     //     toast.error("Please select Scheduled Time for selected platforms.");
-                        //     //     return;
-                        //     // }
-                        // })()}
-
-
                         {...register("scheduleTime")}
 
                         className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500' />

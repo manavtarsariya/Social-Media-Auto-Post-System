@@ -1,6 +1,6 @@
 import Footer from '@/components/layout/Footer'
 import Navbar from '@/components/layout/Navbar'
-import { getAllPosts } from '@/features/Posts/api/post'
+// import { getAllPosts } from '@/features/Posts/api/post'
 import FilterCard from '@/features/Posts/components/FilterCard'
 import PostAnalytics from '@/features/Posts/components/PostAnalytics'
 import Posts from '@/features/Posts/components/Posts'
@@ -19,7 +19,7 @@ const AllPosts = () => {
         //   method: 'GET',
         //   // credentials: 'include', // same as withCredentials: true
         // });
-        console.log(response.data)
+        // console.log(response.data)
         const posts = response.data.posts || [];
         setAllPosts(posts);
         setFilterPosts(posts);

@@ -1,7 +1,7 @@
 import Navbar from '@/components/layout/Navbar';
 import { setUser } from '@/redux/authSlice';
 import { Loader2 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -12,7 +12,7 @@ function Login() {
     const [temp, settemp] = useState(false)
 
     const {user} = useSelector(store => store.auth)
-    console.log(user)
+    // console.log(user)
 
     const navigate = useNavigate()
     const dispatch = useDispatch();
@@ -24,6 +24,13 @@ function Login() {
         formState: { errors },
         reset,
     } = useForm();
+
+     useEffect(() => {
+        if (user) {
+            navigate("/")
+        }
+    }, [navigate, user])
+
 
 
     const onSubmit = async (data) => {
@@ -41,24 +48,22 @@ function Login() {
                 body: JSON.stringify(data),
             });
 
-            // const res = await login(data)
             const result = await response.json();
-            // console.log(result)
-            // return result;
+
 
             if (result.success) {
                 toast.success(result.message)
                 dispatch(setUser(result.user))
                 reset();
-                // isLogin.current = true
-                // onLoginSuccess(true);
+                navigate("/");
+            } else if (!result.success) {
+                toast.error(result.message)
+
             }
-            // setIsLogin(true)
-            navigate("/");
 
         } catch (error) {
-            toast.error(error.response.data.message)
             console.log(error);
+            toast.error(error.response.data.message)
 
         } finally {
             settemp(false)
@@ -67,9 +72,9 @@ function Login() {
     };
 
     return (
-        <div className="bg-gray-100 flex items-center justify-center min-h-screen">
+        <div className="bg-gray-900 flex items-center justify-center min-h-screen ">
             <Navbar />
-            <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md mt-17">
+            <div className="bg-gradient-to-r from-pink-400 to-orange-400/90 p-8 rounded-lg shadow-md w-full max-w-md mt-17">
                 <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Welcome Back!</h2>
 
                 <form onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -93,7 +98,7 @@ function Login() {
                 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? 'border-red-500' : ''
                                 }`}
                         />
-                        {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+                        {errors.email && <p className="text-white font-medium text-sm mt-1">* {errors.email.message}</p>}
                     </div>
 
                     {/* Password Input */}
@@ -116,7 +121,7 @@ function Login() {
                 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border-red-500' : ''
                                 }`}
                         />
-                        {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+                        {errors.password && <p className="text-white font-medium text-sm mt-1">* {errors.password.message}</p>}
                     </div>
 
                     {/* Submit Button */}
@@ -137,7 +142,7 @@ function Login() {
                     {/* Link to Register Page */}
                     <p className="text-center text-gray-600 text-sm mt-6">
                         Don't have an account?{' '}
-                        <a href="/signup" className="text-blue-500 hover:text-blue-700 font-bold">
+                        <a href="/signup" className="text-blue-600 hover:text-blue-700 font-bold">
                             Sign Up
                         </a>
                     </p>
