@@ -9,8 +9,9 @@ import AllPosts from "./pages/AllPosts";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import { useEffect, useState } from "react";
-import FinaleLayout from "./pages/FinaleLayout";
+
 import ProtectedRouteUser from "./components/ProtectedRouteUser";
+import UpdatePost from "./pages/UpdatePost";
 
 
 function App() {
@@ -43,6 +44,13 @@ function App() {
         <ProtectedRouteUser>
           <AllPosts />
         </ProtectedRouteUser>
+    },
+    {
+      path: "/updatepost/:id",
+      element:
+        // <ProtectedRouteUser>
+          <UpdatePost />
+        // {/* </ProtectedRouteUser> */}
 
       ,
     },

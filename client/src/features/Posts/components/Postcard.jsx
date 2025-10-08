@@ -11,6 +11,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Link } from 'react-router';
 
 
 
@@ -23,6 +24,9 @@ const statusColors = {
 
 
 const Postcard = ({ post, DeleteHandler }) => {
+
+    // const navigate =useNavigate();
+
     {
         return (
             <div className="w-full h-230  max-w-md bg-[#1a1d24] rounded-2xl overflow-hidden shadow-2xl border border-slate-600/50 hover:border-blue-500/30 transition-all duration-300 hover:shadow-blue-500/10">
@@ -166,9 +170,10 @@ const Postcard = ({ post, DeleteHandler }) => {
                             </AlertDialog>
 
 
-                            <Button variant="outline" className={'border-1 p-5 rounded-full hover:bg-blue-500/10 hover:cursor-pointer'} >
+                            <Link to={`/updatepost/${post._id}`} className={'border-1 p-2.5 rounded-full hover:bg-blue-500/10 hover:cursor-pointer'} 
+                            >
                                 <PenBox className="w-5 h-5 text-blue-400 hover:text-blue-500" />
-                            </Button>
+                            </Link>
 
                         </div>
 
