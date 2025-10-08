@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import { useEffect, useState } from "react";
 import FinaleLayout from "./pages/FinaleLayout";
+import ProtectedRouteUser from "./components/ProtectedRouteUser";
 
 
 function App() {
@@ -25,45 +26,46 @@ function App() {
       path: "/",
       element:
         // <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
-          <Home />
-        // </FinaleLayout>,
+        <Home />
+      // </FinaleLayout>,
     },
     {
       path: "/createpost",
       element:
-        // <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
+        <ProtectedRouteUser>
           <Createpostpage />
-        // </FinaleLayout>
-      
+        </ProtectedRouteUser>
+
     },
     {
       path: "/posts",
       element:
-        // <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
+        <ProtectedRouteUser>
           <AllPosts />
-        // </FinaleLayout>
+        </ProtectedRouteUser>
+
       ,
     },
     {
       path: "/login",
       element:
         // <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
-          <Login setIsLogin={setIsLogin} />
-        // </FinaleLayout>,
+        <Login setIsLogin={setIsLogin} />
+      // </FinaleLayout>,
     },
     {
       path: "/signup",
       element:
         // <FinaleLayout isLogin={isLogin} setIsLogin={setIsLogin}>
-          <SignUp />
-        // </FinaleLayout>,
+        <SignUp />
+      // </FinaleLayout>,
     }
   ]);
 
   return (
     <>
       <div>
-        
+
         <RouterProvider router={router} />
         {/* <Navbar/> */}
 

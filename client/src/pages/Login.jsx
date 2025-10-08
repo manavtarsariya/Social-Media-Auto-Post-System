@@ -1,7 +1,9 @@
 import Navbar from '@/components/layout/Navbar';
+import { setUser } from '@/redux/authSlice';
 import { Loader2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 
@@ -9,7 +11,12 @@ function Login() {
 
     const [temp, settemp] = useState(false)
 
+    const {user} = useSelector(store => store.auth)
+    console.log(user)
+
     const navigate = useNavigate()
+    const dispatch = useDispatch();
+
     // Initialize react-hook-form
     const {
         register,
@@ -41,6 +48,7 @@ function Login() {
 
             if (result.success) {
                 toast.success(result.message)
+                dispatch(setUser(result.user))
                 reset();
                 // isLogin.current = true
                 // onLoginSuccess(true);

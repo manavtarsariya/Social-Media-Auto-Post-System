@@ -146,7 +146,7 @@ export const getallPosts = async (req, res) => {
     try {
         const userId = req.id
 
-        const posts = await Post.find({ userId: userId }).sort({ createdAt: -1 });;
+        const posts = await Post.find({ userId: userId }).sort({ createdAt: -1 }).populate('userId', 'username');;
         if (posts.length === 0) {
             return res.status(404).json({
                 message: "No posts found",

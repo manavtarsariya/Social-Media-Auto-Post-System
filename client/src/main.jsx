@@ -5,20 +5,30 @@ import { BrowserRouter } from "react-router";
 import App from './App.jsx'
 import { Toaster } from './components/ui/sonner';
 import { ToastContainer } from 'react-toastify';
+import { Provider } from 'react-redux';
+import store from './redux/store';
+import persistStore from 'redux-persist/es/persistStore';
+import { PersistGate } from 'redux-persist/integration/react';
+
+const persistor = persistStore(store)
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
-    <Toaster />
-    <ToastContainer
-      position="bottom-right"
-      autoClose={3000} // milliseconds
-      hideProgressBar={false}
-      newestOnTop={false}
-      closeOnClick
-      pauseOnHover
-      draggable
-      theme="dark"
-    />
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <App />
+        <Toaster />
+        <ToastContainer
+          position="bottom-right"
+          autoClose={3000} // milliseconds
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          pauseOnHover
+          draggable
+          theme="dark"
+        />
+      </PersistGate>
+    </Provider>
   </StrictMode>,
 )

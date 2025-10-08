@@ -3,6 +3,8 @@ import { Button } from "../ui/button";
 import logo from "../../assets/logo-2.png"
 import { toast } from "react-toastify";
 import { logout } from "@/features/Users/api/users";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "@/redux/authSlice";
 // import { useMemo, useState } from "react";
 // import { getAllPosts } from "@/features/Posts/api/post";
 // import { useState } from "react";
@@ -10,35 +12,11 @@ import { logout } from "@/features/Users/api/users";
 
 export default function Navbar() {
 
-  // const [isLoggedin, setisLoggedin] = useState( )
-  // console.log("Navbar",isLogin.current)
-
-  // useMemo(()=>{
-
-  //   async function name() {
-
-  //   try {
-  //     const res = await getAllPosts()
-
-  //     if (res.data.success) {
-  //       setisLoggedin(true)
-  //     } else {
-  //       setisLoggedin(false)
-
-  //     }
-
-  //   } catch (error) {
-  //     setisLoggedin(false)
-  //   }
-
-  // }
-  // name()
-
-  // },[])
-  
-
+  const { user } = useSelector(store => store.auth)
+  // console.log(user)
 
   const navigate = useNavigate()
+  const dispatch = useDispatch();
 
   const logoutHandler = async () => {
 
@@ -49,8 +27,7 @@ export default function Navbar() {
 
       if (res.data.success) {
         toast.success(res.data.message)
-        // console.lo
-        // isLogin.current = false
+        dispatch(setUser(null))
         navigate("/")
       }
 
@@ -74,16 +51,16 @@ export default function Navbar() {
           </div>
 
           {/* Links */}
-          <div className="hidden md:flex space-x-6 text-gray-700 mr-10">
+          <div className={`hidden md:flex space-x-6 text-gray-700 mr-10 ${user && "mr-25"}`}>
             <Link to="/" className="hover:text-blue-600">Home</Link>
             <Link to="/createpost" className=" hover:text-blue-600">Create Post</Link>
-            <Link to="/posts" className=" hover:text-blue-600">Posts</Link>
+            {user && <Link to="/posts" className=" hover:text-blue-600">Posts</Link>}
           </div>
 
           {/* Profile */}
           <div className="flex items-center space-x-2">
 
-            {/* {isLoggedin ? */}
+            {!user ?
 
               <>
                 <Button variant={"outline"} className={`text-black`}
@@ -94,13 +71,13 @@ export default function Navbar() {
                   onClick={() => (navigate("/signup"))}
                 >SignUp</Button>
               </>
-              {/* : */}
+              :
               <>
                 <Button variant={"outline"} className={`text-black `}
                   onClick={() => logoutHandler()}
                 >Log out</Button>
               </>
-            {/* } */}
+            }
 
           </div>
         </div>

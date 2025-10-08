@@ -34,8 +34,8 @@ const Postcard = ({ post, DeleteHandler }) => {
                         </div>
 
                         <div>
-                            <h3 className="text-slate-100 font-semibold text-sm leading-tight">{post?.username}</h3>
-                            <p className="text-slate-500 text-xs mt-0.5">ID: UserName</p>
+                            <h3 className="text-slate-100 font-semibold text-sm text-left">{post?.userId?.username}</h3>
+                            {/* <p className="text-slate-500 text-xs mt-0.5">ID: {}</p> */}
                         </div>
                     </div>
                     <span
