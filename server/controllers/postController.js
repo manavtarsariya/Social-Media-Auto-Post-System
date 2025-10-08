@@ -146,7 +146,7 @@ export const getallPosts = async (req, res) => {
     try {
         const userId = req.id
 
-        const posts = await Post.find({ userId: userId }).sort({ createdAt: -1 }).populate('userId', 'username');;
+        const posts = await Post.find({ userId: userId }).sort({ updatedAt: -1 }).populate('userId', 'username');;
         if (posts.length === 0) {
             return res.status(404).json({
                 message: "No posts found",
@@ -598,5 +598,160 @@ export const sentimentanalyzer = async (req, res) => {
             success: false,
             error: "Failed to analyze sentiment.",
         });
+    }
+}
+
+
+export const updatepost = async (req, res) => {
+    try {
+
+        const { error } = createPostSchema.validate(req.body);
+        if (error) {
+            return res.status(400).json({
+                message: error.details[0].message,
+                success: false
+            });
+        }
+
+
+        const postId = req.params.id
+
+        const { title, content, hashtags, scheduleTime, platforms, aiCaption } = req.body;
+
+        const userId = req.id
+
+        if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({
+                message: "please provide valid User ID",
+                success: false
+            });
+        }
+        if (postId && !mongoose.Types.ObjectId.isValid(postId)) {
+            return res.status(400).json({
+                message: "please provide valid Post ID",
+                success: false
+            });
+        }
+
+        if (!title.trim()) {
+            return res.status(400).json({
+                message: "Title cannot be empty or consist only of spaces",
+                success: false
+            });
+        }
+
+        const hashstagsArray = hashtags.split(',').map(tag => tag.trim()) || [];
+
+        let imageUrl = "";
+
+        if (req.file) {
+            const image = req.file
+            const fileuri = getDataUri(image)
+            const result = await cloudinary.uploader.upload(fileuri.content)
+            imageUrl = result.secure_url;
+        }
+
+        const post = await Post.findById({ _id: postId })
+
+        let status = "";
+
+        if (scheduleTime) {
+
+            const now = new Date();
+            const preselected = new Date(post.scheduleTime);
+            const selected = new Date(scheduleTime);
+
+            if ((selected.getTime() != preselected.getTime()) && (selected.getTime() < now.getTime())) {
+                toast.error("Schedule time must be at least +1 minute in the future.");
+                return;
+            }
+
+            if (selected.getTime() == preselected.getTime() && post.status == "posted") {
+                status = post.status;
+            } else if ((selected.getTime() > now.getTime())) {
+                status = "scheduled"
+            }
+        } else {
+            status = "pending";
+        }
+
+        if (!aiCaption) {
+            status = "failed";
+        }
+
+
+
+        let platformsArray = [];
+
+        if (typeof (platforms) === "string") {
+            platformsArray = JSON.parse(platforms);
+        } else {
+            platformsArray = platforms || [];
+        }
+
+        if (platformsArray.length >= 1 && scheduleTime === "") {
+            return res.status(400).json({
+                message: "Please provide schedule time for selected platforms",
+                success: false
+            });
+
+        }
+
+        if (platformsArray.length === 0 && scheduleTime !== "") {
+            return res.status(400).json({
+                message: "Please select at least one platform for scheduled post",
+                success: false
+            });
+        }
+
+
+
+        const postData = {
+            userId,
+            title,
+            content,
+            hashtags: hashstagsArray,
+            scheduleTime,
+            platforms: platformsArray,
+            aiCaption,
+
+            ...(imageUrl && { imageUrl }),
+            ...(status && { status }),
+        };
+
+
+        const updatedPost = await Post.findByIdAndUpdate({ _id: postId }, postData, { new: true });
+
+
+        return res.status(201).json({
+            message: "Post Updated successfully",
+            success: true,
+        });
+
+
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const getpostdetailsbyid = async (req, res) => {
+    try {
+        const postId = req.params.id
+
+        const postdetails = await Post.findById({ _id: postId })
+
+        return res.status(200).json({
+            message: true,
+            postdetails
+        })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({
+            success: false,
+            message: "post not found",
+        });
+
     }
 }

@@ -39,3 +39,11 @@ export const analyzeSentiment = (data) => API.post(`/analyze-sentiment`, data, {
         'Content-Type': 'application/json',
     },
 });
+
+export const findpost = (data) => API.get(`/postdetails/${data}`);
+
+export const updatepost = (id, data) => API.post(`/updatepost/${id}`, data, {
+    headers: {
+        'Content-Type': 'multipart/form-data',
+    }
+});
