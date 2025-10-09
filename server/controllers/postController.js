@@ -35,8 +35,9 @@ export const createPost = async (req, res) => {
 
     const { title, content, hashtags, scheduleTime, platforms, aiCaption } = req.body;
 
+
+    // console.log(req.body)
     const userId = req.id
-    // console.log(userId)
 
     if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
         return res.status(400).json({
@@ -387,7 +388,7 @@ export const captiongenerator = async (req, res) => {
         console.error("Error in Gemini API for caption generation:", error);
         return res.status(500).json({
             success: false,
-            error: "Failed to generate AI caption.",
+            message: "Failed to generate AI caption.",
         });
     }
 }
@@ -527,7 +528,7 @@ export const hashtagsgenerator = async (req, res) => {
         console.error("Error in Gemini API for hashtags generation:", error);
         return res.status(500).json({
             success: false,
-            error: "Failed to generate hashtags.",
+            message: "Failed to generate hashtags.",
         });
     }
 
@@ -596,7 +597,7 @@ export const sentimentanalyzer = async (req, res) => {
         console.error("Error in Gemini API for analyzing sentiment:", error);
         return res.status(500).json({
             success: false,
-            error: "Failed to analyze sentiment.",
+            message: "Failed to analyze sentiment.",
         });
     }
 }
@@ -731,7 +732,11 @@ export const updatepost = async (req, res) => {
 
 
     } catch (error) {
-        console.log(error)
+        console.log("Error during Updating Post",error)
+        return res.status(400).json({
+            message: "An Error occured during Updating Post",
+            success: false,
+        });
     }
 }
 
@@ -751,6 +756,169 @@ export const getpostdetailsbyid = async (req, res) => {
         return res.status(400).json({
             success: false,
             message: "post not found",
+        });
+
+    }
+}
+
+async function urlToGenerativePart(url, mimeType) {
+    console.log(`-> Downloading image from: ${url}`);
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const buffer = await response.arrayBuffer();
+
+        const nodeBuffer = Buffer.from(buffer);
+        const base64Data = nodeBuffer.toString("base64");
+
+        console.log("-> Image downloaded and encoded successfully.");
+
+        return {
+            inlineData: {
+                data: base64Data,
+                mimeType: mimeType
+            },
+        };
+    } catch (error) {
+        console.error("Error fetching or processing image:", error);
+        throw error;
+    }
+}
+
+
+export const generateCaptionwithExistPhoto = async (req, res) => {
+    try {
+
+
+        const imageUrl = req.body.imageUrl;
+
+        const apiKey = process.env.GEMINI_API_KEY;
+
+        const ai = new GoogleGenerativeAI(apiKey);
+        const mimeType = imageUrl.endsWith(".png") ? "image/png" : "image/jpeg";
+
+        let imagePart;
+        try {
+            imagePart = await urlToGenerativePart(imageUrl, mimeType);
+        } catch (e) {
+            console.error("Error preparing image part:", e.message);
+            throw new Error("Failed to process image URL.");
+        }
+
+        const PROMPT = `
+                  Act as a professional social media copywriter. Your single task is to write one compelling caption based ONLY on the visual content of the provided image.
+
+                ---
+                INSTRUCTIONS:
+                - The tone must be: Engaging and Conversational
+                - The length should be approximately: 2 to 3 short sentences (around 150 characters)
+                - CRITICAL: Do NOT include hashtags.
+                - CRITICAL: Do NOT include emojis.
+                - CRITICAL: Do NOT include any text other than the caption itself.
+                ---
+                `;
+
+        const contents = [
+            {
+                role: "user",
+                parts: [
+                    imagePart,
+                    {
+                        text: PROMPT,
+                    },
+                ],
+            },
+        ];
+
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const result = await model.generateContent({ contents });
+        const response = await result.response;
+        const aiCaption = response.text();
+
+
+        return res.status(200).json({
+            success: true,
+            caption: aiCaption,
+        });
+
+
+    } catch (error) {
+        console.error("Error in caption generation From Existing Photo :", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to generate AI caption.",
+        });
+
+    }
+}
+
+export const generateHashtagswithExistPhoto = async (req, res) => {
+    try {
+
+        const imageUrl = req.body.imageUrl;
+
+        const apiKey = process.env.GEMINI_API_KEY;
+
+        const ai = new GoogleGenerativeAI(apiKey);
+        const mimeType = imageUrl.endsWith(".png") ? "image/png" : "image/jpeg";
+
+        let imagePart;
+        try {
+            imagePart = await urlToGenerativePart(imageUrl, mimeType);
+        } catch (e) {
+            console.error("Error preparing image part:", e.message);
+            throw new Error("Failed to process image URL.");
+        }
+
+        const PROMPT = `
+        Act as a professional content tagger and keyword generator. Your task is to analyze the provided image and extract exactly 6 highly relevant, trending keywords or phrases.
+
+        ---
+         CRITICAL RULES:
+        1.  **Generate exactly 4 to 5 of the most relevant hashtags.**
+        2.  The output MUST be a string of words separated ONLY by commas.
+        3.  DO NOT use spaces after the commas.
+        4.  DO NOT use the '#' symbol.
+        5.  DO NOT add any explanations, labels, or any text other than the comma-separated hashtags.
+    
+         EXAMPLE OUTPUT: hashtagone,hashtagtwo,hashtagthree
+        ---
+    `;
+
+        const contents = [
+            {
+                role: "user",
+                parts: [
+                    imagePart,
+                    {
+                        text: PROMPT,
+                    },
+                ],
+            },
+        ];
+
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const result = await model.generateContent({ contents });
+        const response = await result.response;
+        const hashtags = response.text();
+
+
+        return res.status(200).json({
+            success: true,
+            hashtags: hashtags,
+        });
+
+
+    } catch (error) {
+        console.error("Error in Hashtags generation From Existing Photo :", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to generate AI Hashtags.",
         });
 
     }

@@ -10,9 +10,6 @@ import { useSelector } from 'react-redux';
 const UpdatePostForm = () => {
 
 
-    // const {editpost}  = useSelector(store => store.post)
-
-
     const navigate = useNavigate()
     const { editpost } = useSelector(store => store.post)
     const postId = editpost._id;
@@ -40,7 +37,8 @@ const UpdatePostForm = () => {
         register,
         setValue,
         getValues,
-        reset
+        reset,
+        watch,
     } = useForm({
         // Default values for the form fields
         defaultValues: {
@@ -110,6 +108,30 @@ const UpdatePostForm = () => {
                 setTemp1(false);
             }
 
+        } else if (editpost.imageUrl) {
+            try {
+
+                setTemp1(true);
+
+                const res = await fetch("http://localhost:8000/api/posts/existing-image-caption", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+
+                        imageUrl: editpost.imageUrl,
+                    }),
+                });
+                const responseData = await res.json();
+                setValue("aiCaption", responseData.caption, { shouldValidate: true });
+
+            } catch (err) {
+                toast.error(err.response?.data?.message || "Failed to generate caption");
+            } finally {
+                setTemp1(false);
+            }
+
         } else {
 
             const formData = new FormData();
@@ -159,6 +181,31 @@ const UpdatePostForm = () => {
                 setValue("hashtags", res.data.hashtags, { shouldValidate: true });
             } catch (err) {
                 toast.error(err.response?.data?.message || "Failed to generate hashtags");
+            } finally {
+                setTemp2(false);
+            }
+
+        } else if (editpost.imageUrl) {
+            try {
+
+                setTemp2(true);
+                //  setValue("aiCaption", "", { shouldValidate: true });
+
+                const res = await fetch("http://localhost:8000/api/posts/existing-image-hashtags", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+
+                        imageUrl: editpost.imageUrl,
+                    }),
+                });
+                const responseData = await res.json();
+                setValue("hashtags", responseData.hashtags, { shouldValidate: true });
+
+            } catch (err) {
+                toast.error(err.response?.data?.message || "Failed to generate caption");
             } finally {
                 setTemp2(false);
             }
@@ -279,11 +326,11 @@ const UpdatePostForm = () => {
 
             <form action="" onSubmit={handleSubmit(submitHandler)} className='mt-4'>
 
-                <Link to={"/posts"} className='text-blue-900'><p className='h-5 w-15  bg-blue-200 rounded-full flex justify-center items-center p-3 hover:bg-blue-300'><MoveLeft/></p></Link> 
-                 
+                <Link to={"/posts"} className='text-blue-900'><p className='h-5 w-15  bg-blue-200 rounded-full flex justify-center items-center p-3 hover:bg-blue-300'><MoveLeft /></p></Link>
+
                 <h1 className='font-bold text-5xl text-center p-2 mb-5 text-transparent bg-clip-text bg-gradient-to-bl from-yellow-200 to-red-500'>Update Post </h1>
                 <hr className='mb-14' />
-                <div className='mt-4 flex justify-center items-center'>
+                <div className={`mt-4 flex justify-center items-center`}>
                     <label htmlFor="title" className='block text-lg font-medium text-white w-1/4'>Title</label>
                     <input
                         type="text"
@@ -311,10 +358,10 @@ const UpdatePostForm = () => {
                         className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500'></textarea>
                 </div>
                 {errors.content && <p className="text-red-100 font-medium text-sm text-left ml-28">* {errors.content.message}</p>}
-
+                        {}
                 <div className='mt-4 flex justify-center items-center'>
                     <label className='block text-lg font-medium text-white w-1/4'>Image</label>
-                    {preview && (
+                    { !watch('file') && preview && (
                         <img
                             src={preview}
                             alt="Preview"
@@ -325,7 +372,7 @@ const UpdatePostForm = () => {
                         type='file'
                         accept='image/*'
                         {...register("file")}
-                        className={`mt-1 block  ${preview ? "w-1/2 ml-5" : "w-full"} border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500`} />
+                        className={`mt-1 block  ${preview && !watch('file') ? "w-1/2 ml-5" : "w-full"} border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500`} />
                 </div>
 
                 <div className='mt-4 flex justify-center items-center'>

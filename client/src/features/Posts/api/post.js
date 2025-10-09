@@ -47,3 +47,9 @@ export const updatepost = (id, data) => API.post(`/updatepost/${id}`, data, {
         'Content-Type': 'multipart/form-data',
     }
 });
+
+export const consolecaption = (data) => API.post(`/console`, data, {
+    headers: {
+        'Content-Type': 'application/json',
+    }
+});
