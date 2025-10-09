@@ -118,6 +118,7 @@ const UpdatePostForm = () => {
                     headers: {
                         "Content-Type": "application/json",
                     },
+                    credentials: "include",
                     body: JSON.stringify({
 
                         imageUrl: editpost.imageUrl,
@@ -196,6 +197,7 @@ const UpdatePostForm = () => {
                     headers: {
                         "Content-Type": "application/json",
                     },
+                    credentials: "include",
                     body: JSON.stringify({
 
                         imageUrl: editpost.imageUrl,
@@ -252,11 +254,27 @@ const UpdatePostForm = () => {
 
     const submitHandler = async (data) => {
 
+        let platformsChanged;
+
         const now = new Date();
         const selected = new Date(data.scheduleTime);
         const preselected = new Date(editpost.scheduleTime);
 
-        if ((selected.getTime() != preselected.getTime()) && (selected.getTime() < now.getTime())) {
+        const existingPlatforms = editpost.platforms || [];
+
+        const lengthChanged = existingPlatforms.length !== data.platforms.length;
+
+        const existingPlatformsCopy = [...existingPlatforms];
+        const contentChanged = existingPlatformsCopy.sort().join(',') !== data.platforms.sort().join(',');
+        platformsChanged = lengthChanged || contentChanged;
+
+
+        if ((selected.getTime() == preselected.getTime()) && platformsChanged && (selected.getTime() <= now.getTime() )) {
+            toast.error("You have changed the platforms. Please select a new schedule time.");
+            return;
+        }
+
+        if ((selected.getTime() != preselected.getTime()) && (selected.getTime() <= now.getTime())) {
             toast.error("Schedule time must be at least +1 minute in the future.");
             return;
         }
@@ -341,7 +359,7 @@ const UpdatePostForm = () => {
                             validate: (value) =>
                                 value.trim() !== '' || "The title cannot be only spaces"
                         })}
-                        className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500' />
+                        className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 ' />
                 </div>
                 {errors.title && <p className="text-red-100 font-medium text-sm text-left ml-28">* {errors.title.message}</p>}
 
@@ -358,12 +376,12 @@ const UpdatePostForm = () => {
                         className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500'></textarea>
                 </div>
                 {errors.content && <p className="text-red-100 font-medium text-sm text-left ml-28">* {errors.content.message}</p>}
-                        {}
+                { }
                 <div className='mt-4 flex justify-center items-center'>
                     <label className='block text-lg font-medium text-white w-1/4'>Image</label>
-                    { !watch('file') && preview && (
+                    {!watch('file')?.[0] && editpost.imageUrl && (
                         <img
-                            src={preview}
+                            src={editpost.imageUrl}
                             alt="Preview"
                             className="mt-3 w-45 h-45 object-cover   rounded-lg border "
                         />
@@ -372,7 +390,9 @@ const UpdatePostForm = () => {
                         type='file'
                         accept='image/*'
                         {...register("file")}
-                        className={`mt-1 block  ${preview && !watch('file') ? "w-1/2 ml-5" : "w-full"} border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500`} />
+                        disabled={temp1 || temp2 || isLoading.sentiment}
+                        className={`mt-1 block  ${preview && !watch('file')?.[0] ? "w-1/2 ml-5" : "w-full"} border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 
+                            ${(temp1 || temp2 || isLoading.sentiment) && "opacity-50 cursor-not-allowed text-slate-400"} `} />
                 </div>
 
                 <div className='mt-4 flex justify-center items-center'>

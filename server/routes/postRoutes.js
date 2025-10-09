@@ -16,8 +16,8 @@ router.post('/analyze-sentiment', isAuthenticated, sentimentanalyzer)
 router.post('/updatepost/:id', isAuthenticated,singleUpload, updatepost)
 router.get('/postdetails/:id', isAuthenticated, getpostdetailsbyid)
 
-router.post('/existing-image-caption',generateCaptionwithExistPhoto) 
-router.post('/existing-image-hashtags',generateHashtagswithExistPhoto) 
+router.post('/existing-image-caption',isAuthenticated, generateCaptionwithExistPhoto) 
+router.post('/existing-image-hashtags', isAuthenticated, generateHashtagswithExistPhoto) 
 
 
 

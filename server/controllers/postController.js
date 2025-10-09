@@ -654,6 +654,22 @@ export const updatepost = async (req, res) => {
 
         const post = await Post.findById({ _id: postId })
 
+        let platformsArray = [];
+        let platformsChanged;
+
+        if (typeof (platforms) === "string") {
+            platformsArray = JSON.parse(platforms);
+
+            const existingPlatforms = post.platforms || [];
+
+            const lengthChanged = existingPlatforms.length !== platformsArray.length;
+
+            const contentChanged = existingPlatforms.sort().join(',') !== platformsArray.sort().join(',');
+
+            platformsChanged = lengthChanged || contentChanged;
+
+        }
+
         let status = "";
 
         if (scheduleTime) {
@@ -662,8 +678,15 @@ export const updatepost = async (req, res) => {
             const preselected = new Date(post.scheduleTime);
             const selected = new Date(scheduleTime);
 
+            if ((selected.getTime() == preselected.getTime()) && platformsChanged &&  (selected.getTime() <= now.getTime() )) {
+                return res.status(400).json({
+                    message: "You have changed the platforms. Please select a new schedule time.",
+                    success: false
+                });
+            }
+
             if ((selected.getTime() != preselected.getTime()) && (selected.getTime() < now.getTime())) {
-                toast.error("Schedule time must be at least +1 minute in the future.");
+                console.error("Schedule time must be at least +1 minute in the future.");
                 return;
             }
 
@@ -681,14 +704,11 @@ export const updatepost = async (req, res) => {
         }
 
 
+        // let platformsArray = [];
 
-        let platformsArray = [];
-
-        if (typeof (platforms) === "string") {
-            platformsArray = JSON.parse(platforms);
-        } else {
-            platformsArray = platforms || [];
-        }
+        // if (typeof (platforms) === "string") {
+        //     platformsArray = JSON.parse(platforms);
+        // }
 
         if (platformsArray.length >= 1 && scheduleTime === "") {
             return res.status(400).json({
@@ -732,7 +752,7 @@ export const updatepost = async (req, res) => {
 
 
     } catch (error) {
-        console.log("Error during Updating Post",error)
+        console.log("Error during Updating Post", error)
         return res.status(400).json({
             message: "An Error occured during Updating Post",
             success: false,
