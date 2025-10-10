@@ -84,7 +84,7 @@ const UpdatePostForm = () => {
         const fileList = getValues('file');
 
 
-        if ((!fileList || fileList.length === 0) && (!title.trim() && !content.trim())) {
+        if ((!fileList || fileList.length === 0) && (!title.trim() && !content.trim()) && !editpost?.imageUrl) {
             toast.error("Please Provide the image file or title and content for caption generation.");
             return;
         }
@@ -135,6 +135,11 @@ const UpdatePostForm = () => {
 
         } else {
 
+            if (!title.trim() || !content.trim()) {
+                toast.error("Please Provide the image file or title and content for caption generation.");
+                return;
+            }
+
             const formData = new FormData();
             formData.append('title', title); //
             formData.append('content', content); //
@@ -163,7 +168,7 @@ const UpdatePostForm = () => {
         const fileList = getValues('file');
 
 
-        if ((!fileList || fileList.length === 0) && (!title.trim() && !content.trim())) {
+        if ((!fileList || fileList.length === 0) && (!title.trim() && !content.trim()) && !editpost?.imageUrl) {
             toast.error("Please Provide the image file or title and content for hashtags generation.");
             return;
         }
@@ -213,6 +218,11 @@ const UpdatePostForm = () => {
             }
 
         } else {
+
+            if (!title.trim() || !content.trim()) {
+                toast.error("Please Provide the image file or title and content for hashtags generation.");
+                return;
+            }
 
             const formData = new FormData();
             formData.append('title', title);
@@ -269,7 +279,7 @@ const UpdatePostForm = () => {
         platformsChanged = lengthChanged || contentChanged;
 
 
-        if ((selected.getTime() == preselected.getTime()) && platformsChanged && (selected.getTime() <= now.getTime() )) {
+        if ((selected.getTime() == preselected.getTime()) && platformsChanged && (selected.getTime() <= now.getTime())) {
             toast.error("You have changed the platforms. Please select a new schedule time.");
             return;
         }
@@ -392,7 +402,7 @@ const UpdatePostForm = () => {
                         {...register("file")}
                         disabled={temp1 || temp2 || isLoading.sentiment}
                         className={`mt-1 block  ${preview && !watch('file')?.[0] ? "w-1/2 ml-5" : "w-full"} border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 
-                            ${(temp1 || temp2 || isLoading.sentiment) && "opacity-50 cursor-not-allowed text-slate-400"} `} />
+                            ${(temp1 || temp2 ) && "opacity-50 cursor-not-allowed text-slate-400"} `} />
                 </div>
 
                 <div className='mt-4 flex justify-center items-center'>

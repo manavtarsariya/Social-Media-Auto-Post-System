@@ -74,9 +74,14 @@ const CreateForm = () => {
 
         } else {
 
+            if (!title.trim() || !content.trim()) {
+                toast.error("Please Provide the image file or title and content for caption generation.");
+                return;
+            }
+
             const formData = new FormData();
-            formData.append('title', title); //
-            formData.append('content', content); //
+            formData.append('title', title); 
+            formData.append('content', content); 
 
 
             try {
@@ -126,6 +131,11 @@ const CreateForm = () => {
             }
 
         } else {
+
+            if (!title.trim() || !content.trim()) {
+                toast.error("Please Provide the image file or title and content for hashtags generation.");
+                return;
+            }
 
             const formData = new FormData();
             formData.append('title', title);
@@ -218,7 +228,7 @@ const CreateForm = () => {
         Mixed: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
     };
 
-  
+
     const formatLocalDateTime = (date) => {
         const pad = (n) => n.toString().padStart(2, "0");
 
@@ -276,7 +286,7 @@ const CreateForm = () => {
                         type='file'
                         accept='image/*'
                         {...register("file")}
-                        className={`mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 ${(temp1 || temp2 || isLoading.sentiment) && "opacity-50 cursor-not-allowed text-slate-400"}`}/>
+                        className={`mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 ${(temp1 || temp2 || isLoading.sentiment) && "opacity-50 cursor-not-allowed text-slate-400"}`} />
                 </div>
 
                 <div className='mt-4 flex justify-center items-center'>

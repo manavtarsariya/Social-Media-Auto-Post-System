@@ -572,6 +572,7 @@ export const sentimentanalyzer = async (req, res) => {
             2.  Provide a brief, one-sentence explanation for your choice.
             3.  Your response MUST be a single, minified JSON object with two keys: "sentiment" and "explanation".
             4.  Do NOT include any text or formatting before or after the JSON object.
+            5.  Return only valid JSON (no markdown, no code block).
 
             EXAMPLE JSON OUTPUT:
             {"sentiment":"Positive","explanation":"The text uses uplifting words and expresses excitement."}
