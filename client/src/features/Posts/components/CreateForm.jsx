@@ -276,7 +276,7 @@ const CreateForm = () => {
                         type='file'
                         accept='image/*'
                         {...register("file")}
-                        className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500' />
+                        className={`mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 ${(temp1 || temp2 || isLoading.sentiment) && "opacity-50 cursor-not-allowed text-slate-400"}`}/>
                 </div>
 
                 <div className='mt-4 flex justify-center items-center'>

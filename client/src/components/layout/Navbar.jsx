@@ -26,13 +26,14 @@ export default function Navbar() {
 
 
       if (res.data.success) {
-        toast.success(res.data.message)
+        toast.success(res?.data?.message)
         dispatch(setUser(null))
         navigate("/")
       }
 
     } catch (error) {
-      toast.error(error.response.data.message)
+      dispatch(setUser(null))
+       toast.error("Session expired, logged out automatically.");
       console.log(error)
 
     }
